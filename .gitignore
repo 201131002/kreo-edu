@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+# Uploaded avatars (keep folder)
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep

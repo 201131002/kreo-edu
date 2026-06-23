@@ -1,0 +1,280 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  GURU
+  SISWA
+}
+
+enum BadgeCriteria {
+  LEVEL
+  QUIZ_COUNT
+  FIRST_QUIZ
+}
+
+enum ScheduleDay {
+  SENIN
+  SELASA
+  RABU
+  KAMIS
+  JUMAT
+  SABTU
+  MINGGU
+}
+
+enum ScheduleColor {
+  primary
+  secondary
+  tertiary
+}
+
+enum BankSubject {
+  MATEMATIKA
+  BAHASA_INDONESIA
+  IPAS
+  PENDIDIKAN_PANCASILA
+  BAHASA_INGGRIS
+}
+
+model User {
+  id             String    @id @default(cuid())
+  nama           String
+  email          String    @unique
+  password       String
+  imageUrl       String?
+  role           UserRole  @default(SISWA)
+  createdAt      DateTime  @default(now())
+
+  studentProfile      StudentProfile?
+  classes             Class[]              @relation("TeacherClasses")
+  enrollments         ClassEnrollment[]
+  quizAttempts        QuizAttempt[]
+  discussionMessages  DiscussionMessage[]
+
+  @@index([role])
+}
+
+model StudentProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  currentLevel    Int      @default(1)
+  currentExp      Int      @default(0)
+  virtualCurrency Int      @default(0)
+  activeBorderId  String?
+  activeBadgeId   String?
+  updatedAt       DateTime @updatedAt
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeBorder ShopItem?          @relation("EquippedBorder", fields: [activeBorderId], references: [id], onDelete: SetNull)
+  activeBadge  Badge?             @relation("EquippedBadge", fields: [activeBadgeId], references: [id], onDelete: SetNull)
+  inventory    StudentInventory[]
+  badges       StudentBadge[]
+
+  @@index([currentExp(sort: Desc)])
+}
+
+model Class {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  teacherId   String
+  createdAt   DateTime @default(now())
+
+  teacher         User                @relation("TeacherClasses", fields: [teacherId], references: [id])
+  materials       Material[]
+  quizzes         Quiz[]
+  enrollments     ClassEnrollment[]
+  messages        DiscussionMessage[]
+  scheduleEntries ScheduleEntry[]
+}
+
+model ClassEnrollment {
+  id        String   @id @default(cuid())
+  classId   String
+  studentId String
+  joinedAt  DateTime @default(now())
+
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+}
+
+model Material {
+  id        String   @id @default(cuid())
+  classId   String
+  title     String
+  content   String?
+  fileUrl   String?
+  createdAt DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  classId     String
+  title       String
+  rewardCoins Int      @default(10)
+  rewardExp   Int      @default(50)
+  createdAt   DateTime @default(now())
+
+  class        Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  questions    Question[]
+  quizAttempts QuizAttempt[]
+}
+
+model Question {
+  id            String @id @default(cuid())
+  quizId        String
+  questionText  String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id             String   @id @default(cuid())
+  quizId         String
+  studentId      String
+  score          Int
+  correctAnswers Int
+  totalQuestions Int
+  coinsEarned    Int
+  expEarned      Int
+  createdAt      DateTime @default(now())
+
+  quiz    Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, createdAt])
+  @@index([quizId])
+}
+
+model Badge {
+  id            String        @id @default(cuid())
+  name          String
+  description   String?
+  imageUrl      String
+  criteria      BadgeCriteria
+  criteriaValue Int           @default(0)
+
+  studentBadges StudentBadge[]
+  equippedBy    StudentProfile[] @relation("EquippedBadge")
+
+  @@unique([criteria, criteriaValue])
+}
+
+model StudentBadge {
+  id        String   @id @default(cuid())
+  studentId String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  badge   Badge          @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, badgeId])
+  @@index([studentId])
+}
+
+model ScheduleEntry {
+  id        String        @id @default(cuid())
+  classId   String
+  day       ScheduleDay
+  subject   String
+  startTime String
+  endTime   String
+  color     ScheduleColor @default(primary)
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, day])
+  @@index([classId])
+}
+
+model QuestionBankItem {
+  id            String      @id @default(cuid())
+  grade         Int
+  subject       BankSubject
+  topic         String
+  questionText  String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String
+  createdAt     DateTime    @default(now())
+
+  @@index([grade, subject])
+  @@index([subject])
+}
+
+model ShopItem {
+  id             String @id @default(cuid())
+  name           String
+  priceCoins     Int
+  borderImageUrl String
+
+  studentInventory StudentInventory[]
+  equippedBy       StudentProfile[]   @relation("EquippedBorder")
+}
+
+model DiscussionMessage {
+  id        String   @id @default(cuid())
+  classId   String
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  class  Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([classId, createdAt])
+}
+
+model StudentInventory {
+  id          String   @id @default(cuid())
+  studentId   String
+  itemId      String
+  purchasedAt DateTime @default(now())
+
+  student StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  item    ShopItem       @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, itemId])
+}
+
+model SiteSettings {
+  id                 String   @id @default("default")
+  siteName           String   @default("KREO")
+  logoUrl            String?
+  siteDescription    String   @default("Platform belajar gamifikasi untuk siswa SD. Kumpulkan EXP, koin, dan jadi juara!")
+  heroBadge          String   @default("✨ Platform #1 untuk Siswa SD")
+  heroTitle          String   @default("Belajar Jadi")
+  heroTitleHighlight String   @default("Petualangan Seru!")
+  heroDescription    String   @default("KREO mengubah belajar menjadi game. Kumpulkan EXP, kumpulkan koin, dan jadi pahlawan pengetahuan bersama teman-temanmu!")
+  heroCtaPrimary     String   @default("Mulai Petualangan")
+  heroCtaSecondary   String   @default("Sudah Punya Akun")
+  gamesTitle         String   @default("Mini Games Seru")
+  gamesSubtitle      String   @default("Pilih petualangan favoritmu dan mulai belajar!")
+  miniGamesJson      String   @db.Text
+  statsJson          String   @db.Text
+  ctaTitle           String   @default("Siap Jadi Pahlawan Pengetahuan?")
+  ctaDescription     String   @default("Bergabung dengan ribuan siswa yang sudah belajar sambil bermain di KREO!")
+  ctaButtonText      String   @default("Daftar Gratis Sekarang")
+  footerTagline      String   @default("Platform belajar gamifikasi untuk siswa SD — belajar jadi petualangan seru!")
+  footerCopyright    String   @default("© 2026 KREO. Dibuat dengan ❤️ untuk generasi penerus.")
+  updatedAt          DateTime @updatedAt
+}

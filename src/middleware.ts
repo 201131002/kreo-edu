@@ -5,9 +5,9 @@ import { NextResponse } from "next/server";
 const { auth } = NextAuth(authConfig);
 
 const roleRoutes: Record<string, string[]> = {
-  SISWA: ["/dashboard/siswa", "/kelas", "/toko", "/inventori", "/laporan", "/jadwal", "/pesan", "/peringkat"],
-  GURU: ["/dashboard/guru", "/guru", "/kelas", "/pesan", "/peringkat"],
-  ADMIN: ["/dashboard/admin", "/admin", "/pesan", "/peringkat"],
+  SISWA: ["/dashboard/siswa", "/kelas", "/toko", "/inventori", "/laporan", "/pesan", "/peringkat", "/bantuan"],
+  GURU: ["/dashboard/guru", "/guru", "/kelas", "/pesan", "/peringkat", "/bantuan"],
+  ADMIN: ["/dashboard/admin", "/admin", "/pesan", "/peringkat", "/bantuan"],
 };
 
 function isAllowed(pathname: string, role: string): boolean {
@@ -21,7 +21,7 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth;
   const isAuthPage = pathname === "/masuk" || pathname === "/daftar";
-  const isPublic = pathname === "/" || isAuthPage;
+  const isPublic = pathname === "/" || pathname === "/bantuan" || isAuthPage;
 
   if (isPublic) {
     if (isLoggedIn && isAuthPage) {
@@ -54,7 +54,9 @@ export default auth((req) => {
         : role === "GURU"
           ? "/dashboard/guru"
           : "/dashboard/siswa";
-    return NextResponse.redirect(new URL(dashboard, req.url));
+    const url = new URL(dashboard, req.url);
+    url.search = req.nextUrl.search;
+    return NextResponse.redirect(url);
   }
 
   if (!isAllowed(pathname, role)) {

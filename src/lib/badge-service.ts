@@ -39,9 +39,12 @@ export async function syncEarnedBadges(
   level: number,
   client: DbClient = prisma
 ): Promise<number> {
-  const quizCount = await client.quizAttempt.count({
+  const distinctQuizAttempts = await client.quizAttempt.findMany({
     where: { studentId: userId },
+    select: { quizId: true },
+    distinct: ["quizId"],
   });
+  const quizCount = distinctQuizAttempts.length;
 
   const allBadges = await client.badge.findMany({
     select: { id: true, criteria: true, criteriaValue: true },

@@ -1,10 +1,11 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { FlashAlert } from "@/components/guru/flash-alert";
 import { CreateClassForm } from "@/components/guru/create-class-form";
 import { ClassCard } from "@/components/guru/class-card";
-import { Card, CardDescription } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { BookOpen } from "lucide-react";
 
 export default async function GuruKelasPage({
@@ -14,6 +15,7 @@ export default async function GuruKelasPage({
 }) {
   const session = await auth();
   const sp = await searchParams;
+  const t = await getTranslations("guru.classes");
 
   const classes = await prisma.class.findMany({
     where: { teacherId: session!.user.id },
@@ -25,10 +27,7 @@ export default async function GuruKelasPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <PageHeader
-        title="Kelas Saya"
-        description="Buat kelas, lalu kelola materi dan kuis di dalamnya."
-      />
+      <PageHeader title={t("title")} description={t("description")} />
 
       <FlashAlert success={sp.success} error={sp.error} />
 
@@ -37,16 +36,15 @@ export default async function GuruKelasPage({
       </div>
 
       {classes.length === 0 ? (
-        <Card className="py-12 text-center">
-          <BookOpen className="mx-auto mb-3 h-12 w-12 text-muted" />
-          <CardDescription className="text-base">
-            Belum ada kelas. Buat kelas pertamamu di atas untuk memulai!
-          </CardDescription>
-        </Card>
+        <EmptyState
+          icon={BookOpen}
+          title={t("title")}
+          description={t("noClasses")}
+        />
       ) : (
         <>
           <h2 className="mb-4 font-display text-lg font-bold text-foreground">
-            {classes.length} Kelas Aktif
+            {t("activeCount", { count: classes.length })}
           </h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {classes.map((cls) => (

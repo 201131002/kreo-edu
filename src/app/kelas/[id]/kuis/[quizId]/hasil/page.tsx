@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { PartyPopper, Coins, Star } from "lucide-react";
+import { notFound, redirect } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
+import { PartyPopper, Coins, Star, Clock } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { formatDateTime } from "@/lib/format-date";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,19 +14,48 @@ export default async function HasilKuisPage({
   searchParams,
 }: {
   params: Promise<{ id: string; quizId: string }>;
-  searchParams: Promise<Record<string, string | undefined>>;
+  searchParams: Promise<{ attemptId?: string }>;
 }) {
   const { id, quizId } = await params;
   const sp = await searchParams;
+  const session = await auth();
 
-  const score = Number(sp.score ?? 0);
-  const correct = Number(sp.correct ?? 0);
-  const total = Number(sp.total ?? 0);
-  const coins = Number(sp.coins ?? 0);
-  const exp = Number(sp.exp ?? 0);
-  const isFirstAttempt = sp.first !== "0";
-  const passed = score >= 60;
-  const earnedRewards = isFirstAttempt && (coins > 0 || exp > 0);
+  if (!session || session.user.role !== "SISWA") {
+    redirect("/masuk");
+  }
+
+  if (!sp.attemptId) {
+    redirect(`/kelas/${id}/kuis/${quizId}`);
+  }
+
+  const attempt = await prisma.quizAttempt.findFirst({
+    where: {
+      id: sp.attemptId,
+      studentId: session.user.id,
+      quizId,
+      quiz: { classId: id },
+    },
+    include: {
+      quiz: true,
+    },
+  });
+
+  if (!attempt) notFound();
+
+  const locale = await getLocale();
+  const t = await getTranslations("quizResult");
+
+  const earlierAttempts = await prisma.quizAttempt.count({
+    where: {
+      studentId: session.user.id,
+      quizId,
+      createdAt: { lt: attempt.createdAt },
+    },
+  });
+
+  const passed = attempt.score >= 60;
+  const earnedRewards = attempt.coinsEarned > 0 || attempt.expEarned > 0;
+  const isFirstAttempt = earlierAttempts === 0;
 
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-lg items-center justify-center px-4 py-16">
@@ -31,46 +65,56 @@ export default async function HasilKuisPage({
         </div>
 
         <Badge variant={passed ? "primary" : "secondary"} className="mb-3">
-          {passed ? "Luar Biasa!" : "Terus Semangat!"}
+          {passed ? t("passedBadge") : t("retryBadge")}
         </Badge>
 
         <CardTitle className="text-2xl">
-          {passed ? "Selamat, Kamu Hebat! 🎉" : "Jangan Menyerah! 💪"}
+          {passed ? t("passedTitle") : t("retryTitle")}
         </CardTitle>
         <CardDescription className="mt-2">
-          Kamu menjawab {correct} dari {total} soal dengan benar
+          {t("summary", {
+            correct: attempt.correctAnswers,
+            total: attempt.totalQuestions,
+          })}
         </CardDescription>
 
+        <p className="mt-3 inline-flex items-center justify-center gap-2 text-sm text-muted">
+          <Clock className="h-4 w-4" />
+          {t("completedAt", {
+            datetime: formatDateTime(attempt.createdAt, locale),
+          })}
+        </p>
+
         <p className="mt-6 font-display text-5xl font-bold text-primary">
-          {score}%
+          {attempt.score}%
         </p>
 
         {earnedRewards ? (
           <div className="mt-6 flex justify-center gap-6">
             <div className="flex items-center gap-2">
               <Star className="h-5 w-5 text-tertiary" />
-              <span className="font-bold text-tertiary">+{exp} EXP</span>
+              <span className="font-bold text-tertiary">+{attempt.expEarned} EXP</span>
             </div>
             <div className="flex items-center gap-2">
               <Coins className="h-5 w-5 text-secondary" />
-              <span className="font-bold text-secondary">+{coins} Koin</span>
+              <span className="font-bold text-secondary">+{attempt.coinsEarned} Koin</span>
             </div>
           </div>
         ) : (
           <p className="mt-6 rounded-2xl bg-surface px-4 py-3 text-sm text-muted">
             {isFirstAttempt
-              ? "Skor di bawah 60% — tidak ada EXP atau Koin kali ini. Coba lagi besok!"
-              : "Kamu sudah pernah menyelesaikan kuis ini. EXP dan Koin hanya diberikan pada percobaan pertama."}
+              ? t("noRewardFirst")
+              : t("noRewardRetry")}
           </p>
         )}
 
         <div className="mt-8 flex flex-col gap-3">
           <Link href={`/kelas/${id}/materi`}>
-            <Button className="w-full">Kembali ke Kelas</Button>
+            <Button className="w-full">{t("backToClass")}</Button>
           </Link>
           <Link href={`/kelas/${id}/kuis/${quizId}`}>
             <Button variant="outline" className="w-full">
-              Coba Lagi
+              {t("tryAgain")}
             </Button>
           </Link>
         </div>

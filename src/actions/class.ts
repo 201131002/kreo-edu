@@ -242,7 +242,6 @@ export async function deleteClassAction(formData: FormData): Promise<void> {
 
   revalidatePath("/guru/kelas");
   revalidatePath("/kelas");
-  revalidatePath("/jadwal");
   redirect("/guru/kelas?success=kelas-dihapus");
 }
 

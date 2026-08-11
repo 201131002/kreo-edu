@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getSiteSettings } from "@/lib/site-settings";
 import { SiteLogo } from "@/components/layout/site-logo";
 
@@ -12,6 +13,12 @@ export async function Footer() {
           {settings.siteName}
         </div>
         <p>{settings.footerTagline}</p>
+        <Link
+          href="/bantuan"
+          className="inline-flex min-h-[44px] items-center font-semibold text-primary hover:underline"
+        >
+          Pusat Bantuan
+        </Link>
         <p className="text-xs">{settings.footerCopyright}</p>
       </div>
     </footer>

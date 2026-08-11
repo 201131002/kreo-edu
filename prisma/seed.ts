@@ -109,44 +109,6 @@ async function seedQuestionBank() {
   }
 }
 
-async function seedSchedules() {
-  const defaults = [
-    {
-      classId: "seed-kelas-history-heroes",
-      day: "SENIN" as const,
-      subject: "History Heroes",
-      startTime: "08:00",
-      endTime: "09:30",
-      color: "primary" as const,
-    },
-    {
-      classId: "seed-kelas-history-heroes",
-      day: "RABU" as const,
-      subject: "History Heroes — Kuis",
-      startTime: "10:00",
-      endTime: "11:00",
-      color: "secondary" as const,
-    },
-    {
-      classId: "seed-kelas-history-heroes",
-      day: "JUMAT" as const,
-      subject: "History Heroes — Diskusi",
-      startTime: "08:00",
-      endTime: "09:00",
-      color: "tertiary" as const,
-    },
-  ];
-
-  for (const entry of defaults) {
-    const { classId, day, ...rest } = entry;
-    await prisma.scheduleEntry.upsert({
-      where: { classId_day: { classId, day } },
-      create: { classId, day, ...rest },
-      update: rest,
-    });
-  }
-}
-
 async function seedBadges() {
   const badges = [
     {
@@ -391,9 +353,6 @@ async function main() {
 
   await seedQuestionBank();
   console.log(`  ✓ Question bank (${QUESTION_BANK_DATA.length} soal)`);
-
-  await seedSchedules();
-  console.log("  ✓ Class schedules");
 
   await seedBadges();
   console.log("  ✓ Badges");

@@ -19,22 +19,6 @@ enum BadgeCriteria {
   FIRST_QUIZ
 }
 
-enum ScheduleDay {
-  SENIN
-  SELASA
-  RABU
-  KAMIS
-  JUMAT
-  SABTU
-  MINGGU
-}
-
-enum ScheduleColor {
-  primary
-  secondary
-  tertiary
-}
-
 enum BankSubject {
   MATEMATIKA
   BAHASA_INDONESIA
@@ -56,9 +40,25 @@ model User {
   classes             Class[]              @relation("TeacherClasses")
   enrollments         ClassEnrollment[]
   quizAttempts        QuizAttempt[]
-  discussionMessages  DiscussionMessage[]
+  discussionMessages    DiscussionMessage[]
+  questionBankItems     QuestionBankItem[]  @relation("QuestionBankCreator")
+  auditLogs             AuditLog[]
 
   @@index([role])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  targetId  String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([actorId])
+  @@index([createdAt(sort: Desc)])
 }
 
 model StudentProfile {
@@ -91,8 +91,7 @@ model Class {
   materials       Material[]
   quizzes         Quiz[]
   enrollments     ClassEnrollment[]
-  messages        DiscussionMessage[]
-  scheduleEntries ScheduleEntry[]
+  messages DiscussionMessage[]
 }
 
 model ClassEnrollment {
@@ -153,6 +152,7 @@ model QuizAttempt {
   totalQuestions Int
   coinsEarned    Int
   expEarned      Int
+  answersJson    String?  @db.Text
   createdAt      DateTime @default(now())
 
   quiz    Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
@@ -189,21 +189,6 @@ model StudentBadge {
   @@index([studentId])
 }
 
-model ScheduleEntry {
-  id        String        @id @default(cuid())
-  classId   String
-  day       ScheduleDay
-  subject   String
-  startTime String
-  endTime   String
-  color     ScheduleColor @default(primary)
-
-  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
-
-  @@unique([classId, day])
-  @@index([classId])
-}
-
 model QuestionBankItem {
   id            String      @id @default(cuid())
   grade         Int
@@ -215,10 +200,14 @@ model QuestionBankItem {
   optionC       String
   optionD       String
   correctOption String
+  createdById   String?
   createdAt     DateTime    @default(now())
+
+  createdBy User? @relation("QuestionBankCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([grade, subject])
   @@index([subject])
+  @@index([createdById])
 }
 
 model ShopItem {
@@ -271,7 +260,9 @@ model SiteSettings {
   gamesSubtitle      String   @default("Pilih petualangan favoritmu dan mulai belajar!")
   miniGamesJson      String   @db.Text
   statsJson          String   @db.Text
-  ctaTitle           String   @default("Siap Jadi Pahlawan Pengetahuan?")
+  faqJson                 String   @default("[]") @db.Text
+  studentOnboardingJson   String   @default("{}") @db.Text
+  ctaTitle                String   @default("Siap Jadi Pahlawan Pengetahuan?")
   ctaDescription     String   @default("Bergabung dengan ribuan siswa yang sudah belajar sambil bermain di KREO!")
   ctaButtonText      String   @default("Daftar Gratis Sekarang")
   footerTagline      String   @default("Platform belajar gamifikasi untuk siswa SD — belajar jadi petualangan seru!")

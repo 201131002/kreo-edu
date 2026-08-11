@@ -9,6 +9,11 @@ export function expForNextLevel(level: number): number {
   return level * 100;
 }
 
+/** Menyeragamkan ejaan "quis" → "Kuis" pada teks tampilan. */
+export function normalizeKuisSpelling(text: string): string {
+  return text.replace(/\bquis\b/gi, "Kuis");
+}
+
 export function calculateLevel(exp: number): number {
   let level = 1;
   let threshold = 100;

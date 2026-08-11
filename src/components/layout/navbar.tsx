@@ -1,16 +1,28 @@
 import Link from "next/link";
 import { LogOut, Settings } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/site-settings";
+import { getDesktopNavbarLinks, isAppRole } from "@/lib/nav-config";
 import { SiteLogo } from "@/components/layout/site-logo";
+import { LanguageSwitcherShell } from "@/components/layout/language-switcher-shell";
+import { MobileSidebar } from "@/components/layout/mobile-sidebar";
+import { NavbarLink } from "@/components/layout/navbar-link";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/user/user-avatar";
 
 export async function Navbar() {
   const session = await auth();
   const site = await getSiteSettings();
+  const t = await getTranslations("nav");
+  const tc = await getTranslations("common");
+
+  const role = session?.user.role;
+  const desktopNavLinks =
+    role && isAppRole(role) ? getDesktopNavbarLinks(role) : [];
+  const isLoggedIn = !!session;
 
   const dbUser = session
     ? await prisma.user.findUnique({
@@ -30,64 +42,86 @@ export async function Navbar() {
   const displayName = dbUser?.nama ?? session?.user.nama;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-display text-2xl font-bold text-primary">
-          <SiteLogo siteName={site.siteName} logoUrl={site.logoUrl} />
-          {site.siteName}
-        </Link>
+    <header className="sticky top-0 z-50 border-b border-primary/10 bg-white/85 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
+      <div className="mx-auto flex min-h-[4.25rem] max-w-6xl items-center gap-2 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:gap-3 sm:px-4 sm:pb-3.5">
+        {/* Kiri: menu mobile + brand + nav utama (login) */}
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+          <MobileSidebar role={isAppRole(role) ? role : null} />
+          <Link
+            href={isLoggedIn ? "/dashboard" : "/"}
+            className="flex min-w-0 items-center gap-1.5 rounded-xl py-1 pr-1 transition hover:opacity-90 sm:gap-2"
+            title={site.siteName}
+          >
+            <SiteLogo siteName={site.siteName} logoUrl={site.logoUrl} />
+            <span className="truncate font-display text-lg font-bold text-primary sm:text-xl md:text-2xl">
+              {site.siteName}
+            </span>
+          </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          {session ? (
+          {isLoggedIn && desktopNavLinks.length > 0 ? (
             <>
-              <NavLink href="/dashboard">Dashboard</NavLink>
-              <NavLink href="/pengaturan">Pengaturan</NavLink>
-              {session.user.role === "SISWA" && (
-                <>
-                  <NavLink href="/kelas">Kelas</NavLink>
-                  <NavLink href="/toko">Toko</NavLink>
-                  <NavLink href="/inventori">Inventori</NavLink>
-                  <NavLink href="/peringkat">Peringkat</NavLink>
-                  <NavLink href="/laporan">Laporan</NavLink>
-                  <NavLink href="/pesan">Pesan</NavLink>
-                </>
-              )}
-              {session.user.role === "GURU" && (
-                <>
-                  <NavLink href="/guru/kelas">Kelas Saya</NavLink>
-                  <NavLink href="/guru/bank-soal">Bank Soal</NavLink>
-                  <NavLink href="/guru/jadwal">Jadwal</NavLink>
-                  <NavLink href="/guru/siswa">Siswa</NavLink>
-                  <NavLink href="/pesan">Pesan</NavLink>
-                  <NavLink href="/peringkat">Peringkat</NavLink>
-                </>
-              )}
-              {session.user.role === "ADMIN" && (
-                <>
-                  <NavLink href="/admin/pengguna">Pengguna</NavLink>
-                  <NavLink href="/admin/toko">Toko</NavLink>
-                  <NavLink href="/admin/lencana">Lencana</NavLink>
-                  <NavLink href="/admin/homepage">Homepage</NavLink>
-                  <NavLink href="/pesan">Pesan</NavLink>
-                  <NavLink href="/peringkat">Peringkat</NavLink>
-                </>
-              )}
+              <span
+                className="mx-0.5 hidden h-7 w-px shrink-0 bg-primary/15 md:block"
+                aria-hidden
+              />
+              <nav
+                className="hidden items-center md:flex"
+                aria-label={t("dashboard")}
+              >
+                {desktopNavLinks.map((link) => (
+                  <NavbarLink key={link.href} href={link.href}>
+                    {t(link.labelKey)}
+                  </NavbarLink>
+                ))}
+              </nav>
             </>
-          ) : (
-            <>
-              <NavLink href="/#games">Mini Games</NavLink>
-              <NavLink href="/#stats">Statistik</NavLink>
-            </>
-          )}
-        </nav>
+          ) : null}
+        </div>
 
-        <div className="flex items-center gap-3">
-          {session && displayName ? (
-            <>
-              <Link
-                href="/pengaturan"
-                className="flex items-center gap-2.5 rounded-2xl px-2 py-1 transition hover:bg-primary/5"
-                title="Pengaturan akun"
+        {/* Tengah: hanya tamu (homepage) */}
+        {!isLoggedIn ? (
+          <nav
+            className="hidden flex-1 items-center justify-center gap-1 md:flex lg:gap-2"
+            aria-label={t("menu")}
+          >
+            <NavbarLink href="/#games">{t("adventures")}</NavbarLink>
+            <NavbarLink href="/#stats">{t("statistics")}</NavbarLink>
+            <NavbarLink href="/bantuan">{t("help")}</NavbarLink>
+          </nav>
+        ) : (
+          <div className="min-w-2 flex-1 md:min-w-4" aria-hidden />
+        )}
+
+        {/* Kanan: utilitas + akun */}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
+          <LanguageSwitcherShell />
+
+          {isLoggedIn && displayName ? (
+            <div
+              className="flex items-center rounded-2xl border border-primary/10 bg-white/70 p-0.5 shadow-sm sm:p-1"
+              role="group"
+              aria-label={tc("accountSettings")}
+            >
+              <Link href="/pengaturan" title={t("settings")}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-10 min-h-[44px] min-w-[44px] shrink-0 rounded-xl px-2.5 sm:px-3"
+                  aria-label={t("settings")}
+                >
+                  <Settings className="h-5 w-5 shrink-0" aria-hidden />
+                  <span className="hidden sm:inline">{t("settings")}</span>
+                </Button>
+              </Link>
+
+              <span
+                className="mx-0.5 hidden h-7 w-px bg-primary/10 sm:block"
+                aria-hidden
+              />
+
+              <div
+                className="hidden min-w-0 max-w-[9rem] items-center gap-2 px-1.5 sm:flex md:max-w-[11rem]"
+                title={displayName}
               >
                 <UserAvatar
                   nama={displayName}
@@ -97,54 +131,72 @@ export async function Navbar() {
                   }
                   size="sm"
                 />
-                <span className="hidden max-w-[140px] truncate text-sm font-medium text-foreground sm:block">
+                <span className="truncate text-sm font-medium text-foreground">
                   {displayName}
                 </span>
-              </Link>
-              <Link
-                href="/pengaturan"
-                className="rounded-xl p-2 text-muted transition hover:bg-primary/5 hover:text-primary md:hidden"
-                aria-label="Pengaturan"
-              >
-                <Settings className="h-4 w-4" />
-              </Link>
+              </div>
+
+              <div className="flex sm:hidden" title={displayName}>
+                <UserAvatar
+                  nama={displayName}
+                  imageUrl={dbUser?.imageUrl}
+                  borderImageUrl={
+                    dbUser?.studentProfile?.activeBorder?.borderImageUrl ?? null
+                  }
+                  size="sm"
+                />
+              </div>
+
+              <span
+                className="mx-0.5 hidden h-7 w-px bg-primary/10 sm:block"
+                aria-hidden
+              />
+
               <form
                 action={async () => {
                   "use server";
                   await signOut({ redirectTo: "/" });
                 }}
               >
-                <Button type="submit" variant="ghost" size="sm">
-                  <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">Keluar</span>
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="sm"
+                  className="h-10 min-h-[44px] min-w-[44px] shrink-0 rounded-xl px-2.5 sm:px-3"
+                  aria-label={tc("logout")}
+                >
+                  <LogOut className="h-5 w-5 shrink-0" aria-hidden />
+                  <span className="hidden sm:inline">{tc("logout")}</span>
                 </Button>
               </form>
-            </>
+            </div>
           ) : (
-            <>
-              <Link href="/masuk">
-                <Button variant="ghost" size="sm">
-                  Masuk
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Link href="/masuk" className="hidden sm:block">
+                <Button variant="ghost" size="sm" className="min-h-[44px]">
+                  {tc("login")}
+                </Button>
+              </Link>
+              <Link href="/masuk" className="sm:hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="min-h-[44px] min-w-[44px] px-2"
+                  aria-label={tc("login")}
+                >
+                  <span className="text-xs font-bold">{tc("login")}</span>
                 </Button>
               </Link>
               <Link href="/daftar">
-                <Button size="sm">Daftar</Button>
+                <Button size="sm" className="min-h-[44px] px-3 sm:px-4">
+                  <span className="hidden sm:inline">{tc("register")}</span>
+                  <span className="sm:hidden text-xs font-bold">{tc("register")}</span>
+                </Button>
               </Link>
-            </>
+            </div>
           )}
         </div>
       </div>
     </header>
-  );
-}
-
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="text-sm font-semibold text-foreground/70 transition hover:text-primary"
-    >
-      {children}
-    </Link>
   );
 }

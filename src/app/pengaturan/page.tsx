@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/layout/page-header";
 import { SettingsFlashAlert } from "@/components/settings/flash-alert";
 import { AvatarForm } from "@/components/settings/avatar-form";
+import { NameForm } from "@/components/settings/name-form";
 import { PasswordForm } from "@/components/settings/password-form";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +45,7 @@ export default async function PengaturanPage({
     <div className="mx-auto max-w-2xl px-4 py-10">
       <PageHeader
         title="Pengaturan Akun"
-        description="Kelola foto profil dan keamanan akunmu"
+        description="Kelola nama, foto profil, dan keamanan akunmu"
       />
 
       <SettingsFlashAlert success={sp.success} error={sp.error} />
@@ -57,6 +58,7 @@ export default async function PengaturanPage({
         <CardDescription className="mb-4">
           {user.email} · <Badge variant="primary">{roleLabel}</Badge>
         </CardDescription>
+        <NameForm nama={user.nama} />
         <AvatarForm
           nama={user.nama}
           imageUrl={user.imageUrl}

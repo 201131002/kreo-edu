@@ -1,13 +1,15 @@
 import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { AdminFlashAlert } from "@/components/admin/flash-alert";
 import { UserStats } from "@/components/admin/user-stats";
 import { UserFilters } from "@/components/admin/user-filters";
 import { CreateUserForm } from "@/components/admin/create-user-form";
+import { UserPagination, PAGE_SIZE } from "@/components/admin/user-pagination";
 import { UserRow } from "@/components/admin/user-row";
-import { Card, CardDescription } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Users } from "lucide-react";
 import type { UserRole } from "@/generated/prisma/client";
 import type { Prisma } from "@/generated/prisma/client";
@@ -20,21 +22,30 @@ export default async function AdminPenggunaPage({
     error?: string;
     role?: string;
     q?: string;
+    page?: string;
   }>;
 }) {
   const session = await auth();
   const sp = await searchParams;
+  const t = await getTranslations("admin.users");
+  const tc = await getTranslations("common");
   const filterRole = sp.role ?? "all";
   const query = sp.q?.trim() ?? "";
+  const currentPage = Math.max(1, Number.parseInt(sp.page ?? "1", 10) || 1);
 
-  const [roleCounts, users] = await Promise.all([
+  const where = buildWhere(filterRole, query);
+
+  const [roleCounts, totalCount, users] = await Promise.all([
     prisma.user.groupBy({
       by: ["role"],
       _count: { id: true },
     }),
+    prisma.user.count({ where }),
     prisma.user.findMany({
-      where: buildWhere(filterRole, query),
+      where,
       orderBy: { createdAt: "desc" },
+      skip: (currentPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       select: {
         id: true,
         nama: true,
@@ -64,10 +75,7 @@ export default async function AdminPenggunaPage({
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
-      <PageHeader
-        title="Manajemen Pengguna"
-        description="Kontrol akun siswa, guru, dan admin di seluruh platform."
-      />
+      <PageHeader title={t("title")} description={t("description")} />
 
       <AdminFlashAlert success={sp.success} error={sp.error} />
 
@@ -91,20 +99,20 @@ export default async function AdminPenggunaPage({
       </Suspense>
 
       {users.length === 0 ? (
-        <Card className="py-12 text-center">
-          <Users className="mx-auto mb-3 h-12 w-12 text-muted" />
-          <CardDescription>
-            {query
-              ? `Tidak ada pengguna yang cocok dengan "${query}"`
-              : "Belum ada pengguna di kategori ini."}
-          </CardDescription>
-        </Card>
+        <EmptyState
+          icon={Users}
+          title={t("title")}
+          description={
+            query ? t("noSearchResults", { query }) : t("noUsers")
+          }
+        />
       ) : (
         <div className="space-y-3">
           <p className="text-sm text-muted">
-            Menampilkan {users.length} pengguna
-            {filterRole !== "all" && ` · filter: ${filterRole}`}
-            {query && ` · pencarian: "${query}"`}
+            {tc("showingUsersPaged", { shown: users.length, total: totalCount })}
+            {totalCount > PAGE_SIZE && ` · ${tc("page", { page: currentPage })}`}
+            {filterRole !== "all" && ` · ${tc("filterRole", { role: filterRole })}`}
+            {query && ` · ${tc("searchQuery", { query })}`}
           </p>
           {users.map((user) => (
             <UserRow
@@ -127,6 +135,12 @@ export default async function AdminPenggunaPage({
               }}
             />
           ))}
+          <UserPagination
+            currentPage={currentPage}
+            totalCount={totalCount}
+            role={filterRole}
+            query={query}
+          />
         </div>
       )}
     </div>

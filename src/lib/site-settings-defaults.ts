@@ -1,3 +1,8 @@
+import { DEFAULT_FAQ, defaultFaqJsonString } from "@/lib/faq-defaults";
+import {
+  DEFAULT_STUDENT_ONBOARDING,
+  defaultStudentOnboardingJsonString,
+} from "@/lib/student-onboarding-defaults";
 import type { MiniGameSetting, SiteSettingsData, StatSetting } from "@/lib/site-settings-types";
 
 export const DEFAULT_MINI_GAMES: MiniGameSetting[] = [
@@ -54,6 +59,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   gamesSubtitle: "Pilih petualangan favoritmu dan mulai belajar!",
   miniGames: DEFAULT_MINI_GAMES,
   stats: DEFAULT_STATS,
+  faq: DEFAULT_FAQ,
+  studentOnboarding: DEFAULT_STUDENT_ONBOARDING,
   ctaTitle: "Siap Jadi Pahlawan Pengetahuan?",
   ctaDescription:
     "Bergabung dengan ribuan siswa yang sudah belajar sambil bermain di KREO!",
@@ -67,6 +74,8 @@ export function defaultSiteSettingsDbPayload() {
   const {
     miniGames: _miniGames,
     stats: _stats,
+    faq: _faq,
+    studentOnboarding: _studentOnboarding,
     ...rest
   } = DEFAULT_SITE_SETTINGS;
 
@@ -75,5 +84,7 @@ export function defaultSiteSettingsDbPayload() {
     ...rest,
     miniGamesJson: JSON.stringify(DEFAULT_MINI_GAMES),
     statsJson: JSON.stringify(DEFAULT_STATS),
+    faqJson: defaultFaqJsonString(),
+    studentOnboardingJson: defaultStudentOnboardingJsonString(),
   };
 }

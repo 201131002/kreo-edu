@@ -1,0 +1,12 @@
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "./src/generated/prisma/client";
+import { createPgPool } from "./src/lib/db-pool";
+const pool = createPgPool();
+const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
+const classes = await prisma.class.findMany({ take: 5, select: { id: true, title: true } });
+console.log("CLASSES:", JSON.stringify(classes));
+const quizzes = await prisma.quiz.findMany({ take: 5, select: { id: true, title: true, classId: true } });
+console.log("QUIZZES:", JSON.stringify(quizzes));
+const students = await prisma.user.findMany({ where: { role: "SISWA" }, take: 3, select: { id: true, nama: true } });
+console.log("STUDENTS:", JSON.stringify(students));
+await prisma.$disconnect();

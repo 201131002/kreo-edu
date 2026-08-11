@@ -7,6 +7,7 @@ import {
 } from "@/actions/class";
 import { SubmitButton } from "@/components/guru/submit-button";
 import { Button } from "@/components/ui/button";
+import { ConfirmForm } from "@/components/ui/confirm-button";
 import { Input, Label, Textarea } from "@/components/ui/input";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Pencil, Trash2 } from "lucide-react";
@@ -35,30 +36,26 @@ export function EditClassPanel({
           <Pencil className="h-4 w-4" />
           Edit Kelas
         </Button>
-        <form
-          action={(formData) => {
-            if (
-              !confirm(
-                `Hapus kelas "${title}"? Semua materi, kuis, dan jadwal terkait ikut terhapus.`
-              )
-            ) {
-              return;
-            }
-            startTransition(() => deleteClassAction(formData));
-          }}
+        <ConfirmForm
+          confirmMessage={`Hapus kelas "${title}"? Semua materi dan kuis terkait ikut terhapus.`}
+          action={deleteClassAction}
         >
-          <input type="hidden" name="classId" value={classId} />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="sm"
-            disabled={pending}
-            className="text-red-600 hover:bg-red-50"
-          >
-            <Trash2 className="h-4 w-4" />
-            Hapus Kelas
-          </Button>
-        </form>
+          {(isPending) => (
+            <>
+              <input type="hidden" name="classId" value={classId} />
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                disabled={pending || isPending}
+                className="text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4" />
+                Hapus Kelas
+              </Button>
+            </>
+          )}
+        </ConfirmForm>
       </div>
     );
   }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { deleteQuizAction, updateQuizAction } from "@/actions/class";
 import { SubmitButton } from "@/components/guru/submit-button";
 import { Button } from "@/components/ui/button";
+import { ConfirmForm } from "@/components/ui/confirm-button";
 import { Input, Label } from "@/components/ui/input";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { ChevronRight, Coins, Gamepad2, Pencil, Star, Trash2 } from "lucide-react";
@@ -112,30 +113,26 @@ export function QuizRow({
         >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
-        <form
-          action={(formData) => {
-            if (
-              !confirm(
-                `Hapus kuis "${quiz.title}"? Semua soal dan riwayat attempt ikut terhapus.`
-              )
-            ) {
-              return;
-            }
-            startTransition(() => deleteQuizAction(formData));
-          }}
+        <ConfirmForm
+          confirmMessage={`Hapus kuis "${quiz.title}"? Semua soal dan riwayat percobaan ikut terhapus.`}
+          action={deleteQuizAction}
         >
-          <input type="hidden" name="quizId" value={quiz.id} />
-          <input type="hidden" name="classId" value={classId} />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="sm"
-            disabled={pending}
-            className="text-red-600 hover:bg-red-50"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </form>
+          {(isPending) => (
+            <>
+              <input type="hidden" name="quizId" value={quiz.id} />
+              <input type="hidden" name="classId" value={classId} />
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                disabled={pending || isPending}
+                className="text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </>
+          )}
+        </ConfirmForm>
         {showManageLink && (
           <Link href={`/guru/kelas/${classId}/kuis/${quiz.id}`}>
             <Button variant="outline" size="sm">

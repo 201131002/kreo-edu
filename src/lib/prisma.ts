@@ -4,7 +4,7 @@ import type pg from "pg";
 import { createPgPool } from "@/lib/db-pool";
 
 /** Naikkan angka ini setiap ada perubahan schema Prisma agar cache dev di-refresh. */
-const PRISMA_CLIENT_VERSION = 9;
+const PRISMA_CLIENT_VERSION = 10;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -29,7 +29,6 @@ function isPrismaClientReady(client: PrismaClient): boolean {
     shopItem?: { findUnique?: unknown };
     studentBadge?: { findMany?: unknown };
     badge?: { findMany?: unknown };
-    scheduleEntry?: { findMany?: unknown };
     questionBankItem?: { findMany?: unknown };
   };
   return (
@@ -37,7 +36,6 @@ function isPrismaClientReady(client: PrismaClient): boolean {
     typeof delegates.shopItem?.findUnique === "function" &&
     typeof delegates.studentBadge?.findMany === "function" &&
     typeof delegates.badge?.findMany === "function" &&
-    typeof delegates.scheduleEntry?.findMany === "function" &&
     typeof delegates.questionBankItem?.findMany === "function"
   );
 }

@@ -89,6 +89,37 @@ export const quizSubmitSchema = z.object({
   answers: z.record(z.string(), z.enum(["A", "B", "C", "D"])),
 });
 
+const bankSubjectEnum = z.enum([
+  "MATEMATIKA",
+  "BAHASA_INDONESIA",
+  "IPAS",
+  "PENDIDIKAN_PANCASILA",
+  "BAHASA_INGGRIS",
+]);
+
+export const bankQuestionSchema = z.object({
+  grade: z.coerce.number().int().min(1).max(6),
+  subject: bankSubjectEnum,
+  topic: z.string().min(1, "Topik wajib diisi").max(120),
+  questionText: z.string().min(5, "Pertanyaan minimal 5 karakter"),
+  optionA: z.string().min(1, "Opsi A wajib diisi"),
+  optionB: z.string().min(1, "Opsi B wajib diisi"),
+  optionC: z.string().min(1, "Opsi C wajib diisi"),
+  optionD: z.string().min(1, "Opsi D wajib diisi"),
+  correctOption: z.enum(["A", "B", "C", "D"]),
+});
+
+export const aikenImportSchema = z.object({
+  step: z.enum(["preview", "confirm"]),
+  content: z.string().optional(),
+  questionsJson: z.string().optional(),
+  grade: z.coerce.number().int().min(1).max(6).optional(),
+  subject: bankSubjectEnum.optional(),
+  topic: z.string().min(1).max(120).optional(),
+  quizId: z.string().optional(),
+  classId: z.string().optional(),
+});
+
 export const adminCreateUserSchema = z.object({
   nama: z.string().min(2, "Nama minimal 2 karakter"),
   email: z.string().email("Email tidak valid"),
@@ -113,6 +144,14 @@ export const discussionMessageSchema = z.object({
     .max(500, "Pesan maksimal 500 karakter"),
 });
 
+export const updateNameSchema = z.object({
+  nama: z
+    .string()
+    .trim()
+    .min(2, "Nama minimal 2 karakter")
+    .max(80, "Nama maksimal 80 karakter"),
+});
+
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Password lama wajib diisi"),
@@ -126,29 +165,6 @@ export const changePasswordSchema = z
     message: "Konfirmasi password tidak cocok",
     path: ["confirmPassword"],
   });
-
-const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-export const scheduleDayEntrySchema = z.object({
-  day: z.enum([
-    "SENIN",
-    "SELASA",
-    "RABU",
-    "KAMIS",
-    "JUMAT",
-    "SABTU",
-    "MINGGU",
-  ]),
-  subject: z.string().max(120),
-  startTime: z.string().regex(timePattern, "Format waktu: HH:MM"),
-  endTime: z.string().regex(timePattern, "Format waktu: HH:MM"),
-  color: z.enum(["primary", "secondary", "tertiary"]),
-});
-
-export const saveScheduleSchema = z.object({
-  classId: z.string().min(1),
-  entries: z.array(scheduleDayEntrySchema),
-});
 
 export const badgeFormSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").max(60),

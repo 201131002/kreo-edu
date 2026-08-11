@@ -6,6 +6,7 @@ import { deleteBadgeAction, updateBadgeAction } from "@/actions/badge-admin";
 import { BadgeIcon } from "@/components/inventory/badge-icon";
 import { badgeUnlockLabel } from "@/lib/badge-labels";
 import { Button } from "@/components/ui/button";
+import { ConfirmForm } from "@/components/ui/confirm-button";
 import { Input, Label } from "@/components/ui/input";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Pencil, Trash2 } from "lucide-react";
@@ -59,29 +60,25 @@ export function BadgeRow({
             <Pencil className="h-4 w-4" />
             Edit
           </Button>
-          <form
-            action={(formData) => {
-              if (
-                !confirm(
-                  `Hapus lencana "${badge.name}"? Siswa yang memakainya akan kehilangan lencana ini.`
-                )
-              ) {
-                return;
-              }
-              startTransition(() => deleteBadgeAction(formData));
-            }}
+          <ConfirmForm
+            confirmMessage={`Hapus lencana "${badge.name}"? Siswa yang memakainya akan kehilangan lencana ini.`}
+            action={deleteBadgeAction}
           >
-            <input type="hidden" name="badgeId" value={badge.id} />
-            <Button
-              type="submit"
-              variant="ghost"
-              size="sm"
-              disabled={pending}
-              className="text-red-600 hover:bg-red-50"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </form>
+            {(isPending) => (
+              <>
+                <input type="hidden" name="badgeId" value={badge.id} />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="sm"
+                  disabled={pending || isPending}
+                  className="text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </ConfirmForm>
         </div>
       </Card>
     );

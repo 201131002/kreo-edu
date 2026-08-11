@@ -8,6 +8,7 @@ import {
 import { SubmitButton } from "@/components/guru/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmForm } from "@/components/ui/confirm-button";
 import { Select } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
@@ -17,7 +18,7 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import { useState } from "react";
+
 
 type UserRowProps = {
   id: string;
@@ -54,7 +55,6 @@ export function UserRow({
   studentProfile,
   stats,
 }: UserRowProps) {
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const config = roleConfig[role];
   const Icon = config.icon;
 
@@ -137,37 +137,27 @@ export function UserRow({
               </form>
             )}
 
-            {!confirmDelete ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                onClick={() => setConfirmDelete(true)}
-              >
-                <Trash2 className="h-4 w-4" />
-                Hapus
-              </Button>
-            ) : (
-              <form action={deleteUserAction} className="flex items-center gap-2">
-                <input type="hidden" name="userId" value={id} />
-                <span className="text-xs text-red-600">Yakin?</span>
-                <SubmitButton
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-600 hover:bg-red-50"
-                >
-                  Ya, Hapus
-                </SubmitButton>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setConfirmDelete(false)}
-                >
-                  Batal
-                </Button>
-              </form>
-            )}
+            <ConfirmForm
+              confirmMessage={`Hapus pengguna "${nama}"? Tindakan ini tidak dapat dibatalkan.`}
+              action={deleteUserAction}
+              className="inline-flex"
+            >
+              {(isPending) => (
+                <>
+                  <input type="hidden" name="userId" value={id} />
+                  <Button
+                    type="submit"
+                    variant="ghost"
+                    size="sm"
+                    disabled={isPending}
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Hapus
+                  </Button>
+                </>
+              )}
+            </ConfirmForm>
           </div>
         )}
       </div>

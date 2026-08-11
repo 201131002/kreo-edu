@@ -1,66 +1,142 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { FlashAlert } from "@/components/guru/flash-alert";
+import { AddBankQuestionForm } from "@/components/guru/add-bank-question-form";
+import { AikenImportForm } from "@/components/guru/aiken-import-form";
 import {
   GRADE_OPTIONS,
   SUBJECT_LABELS,
   gradeLabel,
 } from "@/lib/question-bank-labels";
 import type { BankSubject } from "@/generated/prisma/client";
-import { BookOpen, CheckCircle2 } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+
+const PAGE_SIZE = 10;
 
 export default async function GuruBankSoalPage({
   searchParams,
 }: {
-  searchParams: Promise<{ grade?: string; subject?: string }>;
+  searchParams: Promise<{
+    grade?: string;
+    subject?: string;
+    q?: string;
+    page?: string;
+    success?: string;
+    error?: string;
+  }>;
 }) {
   const sp = await searchParams;
+  const t = await getTranslations("guru.questionBank");
   const grade = sp.grade ? Number(sp.grade) : undefined;
   const subject = sp.subject as BankSubject | undefined;
+  const search = sp.q?.trim() ?? "";
+  const page = Math.max(1, Number(sp.page ?? 1) || 1);
 
-  const items = await prisma.questionBankItem.findMany({
-    where: {
-      ...(grade ? { grade } : {}),
-      ...(subject ? { subject } : {}),
-    },
-    orderBy: [{ grade: "asc" }, { subject: "asc" }, { topic: "asc" }],
-  });
+  const where = {
+    ...(grade ? { grade } : {}),
+    ...(subject ? { subject } : {}),
+    ...(search
+      ? {
+          questionText: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        }
+      : {}),
+  };
 
-  const total = await prisma.questionBankItem.count();
+  const [items, filteredTotal, total] = await Promise.all([
+    prisma.questionBankItem.findMany({
+      where,
+      orderBy: [{ grade: "asc" }, { subject: "asc" }, { topic: "asc" }],
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.questionBankItem.count({ where }),
+    prisma.questionBankItem.count(),
+  ]);
 
-  function filterHref(nextGrade?: number, nextSubject?: BankSubject) {
+  const totalPages = Math.max(1, Math.ceil(filteredTotal / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+
+  function filterHref(overrides: {
+    grade?: number;
+    subject?: BankSubject;
+    q?: string;
+    page?: number;
+  }) {
     const params = new URLSearchParams();
+    const nextGrade = "grade" in overrides ? overrides.grade : grade;
+    const nextSubject = "subject" in overrides ? overrides.subject : subject;
+    const nextQ = overrides.q ?? search;
+    const nextPage = overrides.page ?? 1;
+
     if (nextGrade) params.set("grade", String(nextGrade));
     if (nextSubject) params.set("subject", nextSubject);
+    if (nextQ) params.set("q", nextQ);
+    if (nextPage > 1) params.set("page", String(nextPage));
+
     const qs = params.toString();
     return `/guru/bank-soal${qs ? `?${qs}` : ""}`;
   }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <PageHeader
-        title="Bank Soal SD"
-        description={`${total} soal siap pakai untuk Kelas 1–6 sesuai Kurikulum Merdeka. Pilih saat membuat kuis, lalu edit sesuai kebutuhan.`}
-      />
+      <PageHeader title={t("title")} description={t("description")} />
+
+      <FlashAlert success={sp.success} error={sp.error} />
+
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardTitle className="mb-4 text-base">Tambah Soal Manual</CardTitle>
+          <AddBankQuestionForm />
+        </Card>
+        <Card>
+          <AikenImportForm target="bank" />
+        </Card>
+      </div>
+
+      <form method="get" className="mb-6 flex flex-wrap items-end gap-3">
+        {grade ? <input type="hidden" name="grade" value={grade} /> : null}
+        {subject ? <input type="hidden" name="subject" value={subject} /> : null}
+        <div className="min-w-[220px] flex-1">
+          <label htmlFor="search-q" className="mb-2 block text-sm font-semibold">
+            Cari Pertanyaan
+          </label>
+          <Input
+            id="search-q"
+            name="q"
+            defaultValue={search}
+            placeholder="Ketik kata kunci soal..."
+          />
+        </div>
+        <Button type="submit" variant="primary" size="sm">
+          Cari
+        </Button>
+        {search && (
+          <Link href={filterHref({ q: "" })}>
+            <Button type="button" variant="outline" size="sm">
+              Reset
+            </Button>
+          </Link>
+        )}
+      </form>
 
       <div className="mb-6 flex flex-wrap gap-2">
-        <Link href={filterHref()}>
-          <Button
-            variant={!grade && !subject ? "tertiary" : "outline"}
-            size="sm"
-          >
+        <Link href={filterHref({ grade: undefined, subject: undefined, q: search })}>
+          <Button variant={!grade && !subject ? "tertiary" : "outline"} size="sm">
             Semua
           </Button>
         </Link>
         {GRADE_OPTIONS.map((g) => (
-          <Link key={g} href={filterHref(g, subject)}>
-            <Button
-              variant={grade === g ? "tertiary" : "outline"}
-              size="sm"
-            >
+          <Link key={g} href={filterHref({ grade: g, q: search })}>
+            <Button variant={grade === g ? "tertiary" : "outline"} size="sm">
               {gradeLabel(g)}
             </Button>
           </Link>
@@ -69,11 +145,8 @@ export default async function GuruBankSoalPage({
 
       <div className="mb-6 flex flex-wrap gap-2">
         {(Object.keys(SUBJECT_LABELS) as BankSubject[]).map((s) => (
-          <Link key={s} href={filterHref(grade, s)}>
-            <Button
-              variant={subject === s ? "primary" : "outline"}
-              size="sm"
-            >
+          <Link key={s} href={filterHref({ subject: s, q: search })}>
+            <Button variant={subject === s ? "primary" : "outline"} size="sm">
               {SUBJECT_LABELS[s]}
             </Button>
           </Link>
@@ -81,9 +154,11 @@ export default async function GuruBankSoalPage({
       </div>
 
       <p className="mb-4 text-sm text-muted">
-        Menampilkan {items.length} soal
+        Menampilkan {items.length} dari {filteredTotal} soal
         {grade ? ` · ${gradeLabel(grade)}` : ""}
         {subject ? ` · ${SUBJECT_LABELS[subject]}` : ""}
+        {search ? ` · pencarian: "${search}"` : ""}
+        {totalPages > 1 ? ` · halaman ${currentPage}/${totalPages}` : ""}
       </p>
 
       {items.length === 0 ? (
@@ -123,6 +198,40 @@ export default async function GuruBankSoalPage({
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-3">
+          {currentPage > 1 ? (
+            <Link href={filterHref({ page: currentPage - 1, q: search })}>
+              <Button variant="outline" size="sm">
+                <ChevronLeft className="mr-1 h-4 w-4" />
+                Sebelumnya
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled>
+              <ChevronLeft className="mr-1 h-4 w-4" />
+              Sebelumnya
+            </Button>
+          )}
+          <span className="text-sm text-muted">
+            Halaman {currentPage} / {totalPages}
+          </span>
+          {currentPage < totalPages ? (
+            <Link href={filterHref({ page: currentPage + 1, q: search })}>
+              <Button variant="outline" size="sm">
+                Selanjutnya
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+          ) : (
+            <Button variant="outline" size="sm" disabled>
+              Selanjutnya
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          )}
         </div>
       )}
 

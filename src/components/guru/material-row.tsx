@@ -7,6 +7,7 @@ import {
 } from "@/actions/class";
 import { SubmitButton } from "@/components/guru/submit-button";
 import { Button } from "@/components/ui/button";
+import { ConfirmForm } from "@/components/ui/confirm-button";
 import { Input, Label, Textarea } from "@/components/ui/input";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { FileText, Pencil, Trash2 } from "lucide-react";
@@ -82,24 +83,26 @@ export function MaterialRow({
         >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
-        <form
-          action={(formData) => {
-            if (!confirm(`Hapus materi "${material.title}"?`)) return;
-            startTransition(() => deleteMaterialAction(formData));
-          }}
+        <ConfirmForm
+          confirmMessage={`Hapus materi "${material.title}"?`}
+          action={deleteMaterialAction}
         >
-          <input type="hidden" name="materialId" value={material.id} />
-          <input type="hidden" name="classId" value={classId} />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="sm"
-            disabled={pending}
-            className="text-red-600 hover:bg-red-50"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </form>
+          {(isPending) => (
+            <>
+              <input type="hidden" name="materialId" value={material.id} />
+              <input type="hidden" name="classId" value={classId} />
+              <Button
+                type="submit"
+                variant="ghost"
+                size="sm"
+                disabled={pending || isPending}
+                className="text-red-600 hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </>
+          )}
+        </ConfirmForm>
       </div>
     </Card>
   );

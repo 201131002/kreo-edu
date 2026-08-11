@@ -1,13 +1,14 @@
-import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/layout/page-header";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Award, BarChart3, LayoutTemplate, ShoppingBag, Users } from "lucide-react";
+import { SymmetricMenuGrid } from "@/components/dashboard/symmetric-menu-grid";
+import { Award, BarChart3, HelpCircle, LayoutTemplate, ShoppingBag, Users } from "lucide-react";
 
 export default async function AdminDashboard() {
   const session = await auth();
+  const t = await getTranslations("dashboard.admin");
+  const tc = await getTranslations("common");
 
   const [userCount, shopCount, badgeCount, attemptCount] = await Promise.all([
     prisma.user.count(),
@@ -19,60 +20,55 @@ export default async function AdminDashboard() {
   const links = [
     {
       href: "/admin/pengguna",
-      title: "Manajemen Pengguna",
-      desc: `${userCount} pengguna terdaftar`,
+      title: t("userManagement"),
+      description: t("userManagementDesc", { count: userCount }),
       icon: Users,
     },
     {
       href: "/admin/toko",
-      title: "Kelola Toko",
-      desc: `${shopCount} item di toko`,
+      title: t("shopManagement"),
+      description: t("shopManagementDesc", { count: shopCount }),
       icon: ShoppingBag,
     },
     {
       href: "/admin/lencana",
-      title: "Kelola Lencana",
-      desc: `${badgeCount} lencana aktif`,
+      title: t("badgeManagement"),
+      description: t("badgeManagementDesc", { count: badgeCount }),
       icon: Award,
     },
     {
       href: "/admin/analitik",
-      title: "Analitik Global",
-      desc: `${attemptCount} kuis diselesaikan`,
+      title: t("globalAnalytics"),
+      description: t("globalAnalyticsDesc", { count: attemptCount }),
       icon: BarChart3,
     },
     {
       href: "/admin/homepage",
-      title: "Kelola Homepage",
-      desc: "Edit logo, hero, mini games & footer",
+      title: t("homepageManagement"),
+      description: t("homepageManagementDesc"),
       icon: LayoutTemplate,
+    },
+    {
+      href: "/bantuan",
+      title: t("help"),
+      description: t("helpDesc"),
+      icon: HelpCircle,
     },
   ];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <PageHeader
-        title={`Dashboard Admin — ${session!.user.nama}`}
-        description="Pantau dan kelola seluruh platform KREO."
+        title={t("title", { name: session!.user.nama })}
+        description={t("description")}
       />
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {links.map((link) => {
-          const Icon = link.icon;
-          return (
-            <Card key={link.href} className="transition hover:-translate-y-1 hover:shadow-soft">
-              <Icon className="mb-3 h-10 w-10 text-secondary" />
-              <CardTitle>{link.title}</CardTitle>
-              <CardDescription>{link.desc}</CardDescription>
-              <Link href={link.href} className="mt-4 inline-block">
-                <Button variant="secondary" size="sm">
-                  Buka
-                </Button>
-              </Link>
-            </Card>
-          );
-        })}
-      </div>
+      <SymmetricMenuGrid
+        items={links}
+        columns={3}
+        buttonLabel={tc("open")}
+        buttonVariant="secondary"
+      />
     </div>
   );
 }

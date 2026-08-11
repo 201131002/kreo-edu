@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { FlashAlert } from "@/components/guru/flash-alert";
 import { GuruBreadcrumb } from "@/components/guru/breadcrumb";
 import { AddQuestionForm } from "@/components/guru/add-question-form";
+import { AikenImportForm } from "@/components/guru/aiken-import-form";
 import { QuestionBankPanel } from "@/components/guru/question-bank-panel";
 import { QuestionRow } from "@/components/guru/question-row";
 import { QuizRow } from "@/components/guru/quiz-row";
@@ -123,6 +124,10 @@ export default async function GuruQuizBuilderPage({
             Lihat semua bank soal
           </a>
         </p>
+      </Card>
+
+      <Card className="mb-6 border-primary/20">
+        <AikenImportForm target="quiz" classId={id} quizId={quizId} />
       </Card>
 
       <Card>

@@ -8,6 +8,7 @@ import {
   adminUpdateRoleSchema,
   adminUserIdSchema,
 } from "@/lib/validations";
+import { logAdminAction } from "@/lib/audit-log";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import type { UserRole } from "@/generated/prisma/client";
@@ -32,7 +33,7 @@ async function ensureStudentProfile(userId: string) {
 }
 
 export async function createUserAction(formData: FormData): Promise<void> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = adminCreateUserSchema.safeParse({
     nama: formData.get("nama"),
@@ -54,7 +55,7 @@ export async function createUserAction(formData: FormData): Promise<void> {
 
   const hashed = await bcrypt.hash(password, 12);
 
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       nama,
       email,
@@ -63,6 +64,8 @@ export async function createUserAction(formData: FormData): Promise<void> {
       ...(role === "SISWA" ? { studentProfile: { create: {} } } : {}),
     },
   });
+
+  await logAdminAction(session.user.id, "USER_CREATED", user.id, `${role}:${email}`);
 
   revalidatePath("/admin/pengguna");
   revalidatePath("/admin/analitik");
@@ -108,6 +111,13 @@ export async function updateUserRoleAction(formData: FormData): Promise<void> {
     await ensureStudentProfile(userId);
   }
 
+  await logAdminAction(
+    session.user.id,
+    "USER_ROLE_CHANGED",
+    userId,
+    `${user.role}->${role}`
+  );
+
   revalidatePath("/admin/pengguna");
   redirect("/admin/pengguna?success=role-diubah");
 }
@@ -151,13 +161,20 @@ export async function deleteUserAction(formData: FormData): Promise<void> {
 
   await prisma.user.delete({ where: { id: userId } });
 
+  await logAdminAction(
+    session.user.id,
+    "USER_DELETED",
+    userId,
+    `${user.role}:${user.email}`
+  );
+
   revalidatePath("/admin/pengguna");
   revalidatePath("/admin/analitik");
   redirect("/admin/pengguna?success=user-dihapus");
 }
 
 export async function resetStudentProgressAction(formData: FormData): Promise<void> {
-  await requireAdmin();
+  const session = await requireAdmin();
 
   const parsed = adminUserIdSchema.safeParse({
     userId: formData.get("userId"),
@@ -191,6 +208,8 @@ export async function resetStudentProgressAction(formData: FormData): Promise<vo
       },
     }),
   ]);
+
+  await logAdminAction(session.user.id, "STUDENT_PROGRESS_RESET", user.id);
 
   revalidatePath("/admin/pengguna");
   redirect("/admin/pengguna?success=progress-direset");

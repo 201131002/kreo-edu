@@ -1,3 +1,6 @@
+import { unstable_cache } from "next/cache";
+import { parseFaqJson } from "@/lib/faq-defaults";
+import { parseStudentOnboardingJson } from "@/lib/student-onboarding-defaults";
 import { prisma } from "@/lib/prisma";
 import {
   DEFAULT_MINI_GAMES,
@@ -53,6 +56,8 @@ function mapRowToSettings(row: {
   gamesSubtitle: string;
   miniGamesJson: string;
   statsJson: string;
+  faqJson: string;
+  studentOnboardingJson: string;
   ctaTitle: string;
   ctaDescription: string;
   ctaButtonText: string;
@@ -81,6 +86,8 @@ function mapRowToSettings(row: {
       DEFAULT_STATS,
       4
     ),
+    faq: parseFaqJson(row.faqJson),
+    studentOnboarding: parseStudentOnboardingJson(row.studentOnboardingJson),
     ctaTitle: row.ctaTitle,
     ctaDescription: row.ctaDescription,
     ctaButtonText: row.ctaButtonText,
@@ -89,8 +96,20 @@ function mapRowToSettings(row: {
   };
 }
 
-export async function getSiteSettings(): Promise<SiteSettingsData> {
+export const SITE_SETTINGS_CACHE_TAG = "site-settings";
+
+async function fetchSiteSettingsFromDb(): Promise<SiteSettingsData> {
   const row = await prisma.siteSettings.findUnique({ where: { id: "default" } });
   if (!row) return DEFAULT_SITE_SETTINGS;
   return mapRowToSettings(row);
+}
+
+const getCachedSiteSettings = unstable_cache(
+  fetchSiteSettingsFromDb,
+  ["site-settings"],
+  { tags: [SITE_SETTINGS_CACHE_TAG], revalidate: 3600 }
+);
+
+export async function getSiteSettings(): Promise<SiteSettingsData> {
+  return getCachedSiteSettings();
 }

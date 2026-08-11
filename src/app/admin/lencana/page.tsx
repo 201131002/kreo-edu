@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { AdminFlashAlert } from "@/components/admin/flash-alert";
 import { CreateBadgeForm } from "@/components/admin/create-badge-form";
@@ -12,6 +13,7 @@ export default async function AdminLencanaPage({
   searchParams: Promise<{ success?: string; error?: string }>;
 }) {
   const sp = await searchParams;
+  const t = await getTranslations("admin.badges");
 
   const badges = await prisma.badge.findMany({
     orderBy: [{ criteria: "asc" }, { criteriaValue: "asc" }],
@@ -22,10 +24,7 @@ export default async function AdminLencanaPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <PageHeader
-        title="Kelola Lencana"
-        description="Tambah, ubah, atau hapus lencana pencapaian siswa"
-      />
+      <PageHeader title={t("title")} description={t("description")} />
 
       <Suspense>
         <AdminFlashAlert success={sp.success} error={sp.error} />

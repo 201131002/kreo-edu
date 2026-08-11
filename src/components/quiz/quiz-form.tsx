@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useReducedMotion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { submitQuizAction } from "@/actions/quiz";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -30,11 +32,14 @@ export function QuizForm({
   alreadyAttempted?: boolean;
 }) {
   const router = useRouter();
+  const t = useTranslations("kuis");
+  const reducedMotion = useReducedMotion() ?? false;
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const options = ["A", "B", "C", "D"] as const;
+  const allAnswered = Object.keys(answers).length >= questions.length;
 
   function getOptionText(q: Question, opt: string) {
     const map: Record<string, string> = {
@@ -58,16 +63,10 @@ export function QuizForm({
             setError(result.error);
             return;
           }
-          if (result?.success) {
-            const params = new URLSearchParams({
-              score: String(result.score),
-              correct: String(result.correctAnswers),
-              total: String(result.totalQuestions),
-              coins: String(result.coinsEarned),
-              exp: String(result.expEarned),
-              first: result.isFirstAttempt ? "1" : "0",
-            });
-            router.push(`/kelas/${classId}/kuis/${quizId}/hasil?${params}`);
+          if (result?.success && result.attemptId) {
+            router.push(
+              `/kelas/${classId}/kuis/${quizId}/hasil?attemptId=${result.attemptId}`
+            );
           }
         });
       }}
@@ -77,8 +76,7 @@ export function QuizForm({
 
       {alreadyAttempted && (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Kamu sudah pernah mengerjakan kuis ini. Percobaan ulang tidak memberi EXP
-          atau Koin — hanya skor yang dicatat.
+          {t("retryHint")}
         </p>
       )}
 
@@ -87,37 +85,46 @@ export function QuizForm({
           <CardTitle className="text-base">
             {idx + 1}. {q.questionText}
           </CardTitle>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            {options.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
-                className={cn(
-                  "rounded-2xl border-2 px-4 py-3 text-left text-sm font-medium transition",
-                  answers[q.id] === opt
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-transparent bg-surface hover:border-primary/20"
-                )}
-              >
-                <span className="mr-2 font-bold">{opt}.</span>
-                {getOptionText(q, opt)}
-              </button>
-            ))}
+          <div className="mt-4 grid gap-2 sm:grid-cols-2" role="group" aria-label={`${t("question")} ${idx + 1}`}>
+            {options.map((opt) => {
+              const selected = answers[q.id] === opt;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
+                  aria-pressed={selected}
+                  className={cn(
+                    "rounded-2xl border-2 px-4 py-3 text-left text-sm font-medium",
+                    !reducedMotion && "transition",
+                    selected
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-transparent bg-surface hover:border-primary/20"
+                  )}
+                >
+                  <span className="mr-2 font-bold">{opt}.</span>
+                  {getOptionText(q, opt)}
+                </button>
+              );
+            })}
           </div>
         </Card>
       ))}
 
       {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
+        <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600" role="alert">
+          {error}
+        </p>
       )}
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={pending || Object.keys(answers).length < questions.length}
-      >
-        {pending ? "Menghitung skor..." : "Kumpulkan Jawaban"}
+      {!allAnswered && questions.length > 0 && (
+        <p className="text-sm text-muted" role="status">
+          {t("answerAllFirst")}
+        </p>
+      )}
+
+      <Button type="submit" size="lg" disabled={pending || !allAnswered}>
+        {pending ? t("submitting") : t("submitQuiz")}
       </Button>
     </form>
   );

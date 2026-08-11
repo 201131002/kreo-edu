@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+*.md
+data/
+.vscode
+.idea
+coverage
+*.log
+
+</parameter>

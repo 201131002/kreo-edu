@@ -13,8 +13,7 @@ export const GURU_FLASH_MESSAGES: Record<string, { type: "success" | "error"; te
   "soal-dihapus": { type: "success", text: "Soal berhasil dihapus." },
   "pilih-soal-dulu": { type: "error", text: "Pilih minimal satu soal dari bank soal." },
   "soal-bank-tidak-ditemukan": { type: "error", text: "Soal bank tidak ditemukan." },
-  "jadwal-disimpan": { type: "success", text: "Jadwal belajar berhasil disimpan." },
-  "waktu-tidak-valid": { type: "error", text: "Waktu selesai harus setelah waktu mulai." },
+  "soal-bank-ditambah": { type: "success", text: "Soal berhasil ditambahkan ke bank soal." },
   "data-tidak-valid": { type: "error", text: "Data tidak valid. Periksa kembali formulir." },
   "kelas-tidak-ditemukan": { type: "error", text: "Kelas tidak ditemukan." },
   "kuis-tidak-ditemukan": { type: "error", text: "Kuis tidak ditemukan." },
@@ -32,6 +31,24 @@ export function getFlashMessage(key: string | undefined) {
     return {
       type: "success" as const,
       text: `${count} soal dari bank soal berhasil ditambahkan ke kuis.`,
+    };
+  }
+
+  const aikenBankMatch = key.match(/^aiken-bank-(\d+)$/);
+  if (aikenBankMatch) {
+    const count = aikenBankMatch[1];
+    return {
+      type: "success" as const,
+      text: `${count} soal Aiken berhasil diimpor ke bank soal.`,
+    };
+  }
+
+  const aikenQuizMatch = key.match(/^aiken-kuis-(\d+)$/);
+  if (aikenQuizMatch) {
+    const count = aikenQuizMatch[1];
+    return {
+      type: "success" as const,
+      text: `${count} soal Aiken berhasil ditambahkan ke kuis.`,
     };
   }
 

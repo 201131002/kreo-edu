@@ -1,0 +1,1 @@
+ALTER TABLE "SiteSettings" ADD COLUMN "studentOnboardingJson" TEXT NOT NULL DEFAULT '{}';

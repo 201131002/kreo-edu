@@ -5,12 +5,53 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { validateAvatarFile } from "@/lib/image-validation";
 import { deleteAvatarFile, saveAvatar } from "@/lib/avatar-storage";
-import { changePasswordSchema } from "@/lib/validations";
+import { changePasswordSchema, updateNameSchema } from "@/lib/validations";
+import { unstable_update } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function settingsRedirect(query: string): never {
   redirect(`/pengaturan?${query}`);
+}
+
+export async function updateNameAction(
+  formData: FormData
+): Promise<{ error?: string } | void> {
+  const session = await auth();
+  if (!session) settingsRedirect("error=unauthorized");
+
+  const parsed = updateNameSchema.safeParse({
+    nama: formData.get("nama"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Data tidak valid" };
+  }
+
+  const { nama } = parsed.data;
+
+  const user = await prisma.user.findUnique({
+    where: { id: session!.user.id },
+    select: { nama: true },
+  });
+
+  if (!user) settingsRedirect("error=user-tidak-ditemukan");
+
+  if (user.nama === nama) {
+    return { error: "Nama sama dengan yang sekarang" };
+  }
+
+  await prisma.user.update({
+    where: { id: session!.user.id },
+    data: { nama },
+  });
+
+  await unstable_update({ user: { nama } });
+
+  revalidatePath("/pengaturan");
+  revalidatePath("/", "layout");
+  revalidatePath("/dashboard", "layout");
+  settingsRedirect("success=nama-diubah");
 }
 
 export async function changePasswordAction(

@@ -31,6 +31,7 @@ export function UserFilters({
     if (role !== "all") params.set("role", role);
     const query = q ?? currentQuery;
     if (query) params.set("q", query);
+    params.set("page", "1");
     const str = params.toString();
     return `/admin/pengguna${str ? `?${str}` : ""}`;
   }

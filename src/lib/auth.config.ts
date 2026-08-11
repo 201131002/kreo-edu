@@ -25,11 +25,14 @@ export const authConfig: NextAuthConfig = {
   },
   providers: [],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id!;
         token.role = user.role;
         token.nama = user.nama;
+      }
+      if (trigger === "update" && session?.user?.nama) {
+        token.nama = session.user.nama;
       }
       return token;
     },

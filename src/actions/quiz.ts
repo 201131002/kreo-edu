@@ -7,7 +7,7 @@ import { syncEarnedBadges } from "@/lib/badge-service";
 import { calculateLevel } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 
-const MAX_ATTEMPTS_PER_DAY = 3;
+import { MAX_ATTEMPTS_PER_DAY } from "@/lib/quiz-attempt";
 
 export async function submitQuizAction(formData: FormData) {
   const session = await auth();
@@ -47,7 +47,7 @@ export async function submitQuizAction(formData: FormData) {
   });
 
   if (attemptsToday >= MAX_ATTEMPTS_PER_DAY) {
-    return { error: "Kamu sudah mencapai batas 3 kali attempt hari ini" };
+    return { error: "Kamu sudah mencapai batas 3 kali percobaan kuis hari ini" };
   }
 
   const quiz = await prisma.quiz.findUnique({
@@ -58,11 +58,23 @@ export async function submitQuizAction(formData: FormData) {
   if (!quiz) return { error: "Kuis tidak ditemukan" };
 
   let correctAnswers = 0;
-  for (const question of quiz.questions) {
-    if (submittedAnswers[question.id] === question.correctOption) {
-      correctAnswers += 1;
-    }
-  }
+  const answersJsonRecords = quiz.questions.map((question) => {
+    const selected = submittedAnswers[question.id] ?? null;
+    const correct = selected === question.correctOption;
+    if (correct) correctAnswers += 1;
+
+    return {
+      questionId: question.id,
+      selected,
+      correct,
+      questionText: question.questionText,
+      correctOption: question.correctOption as "A" | "B" | "C" | "D",
+      optionA: question.optionA,
+      optionB: question.optionB,
+      optionC: question.optionC,
+      optionD: question.optionD,
+    };
+  });
 
   const totalQuestions = quiz.questions.length;
   const score = totalQuestions > 0
@@ -98,6 +110,7 @@ export async function submitQuizAction(formData: FormData) {
         totalQuestions,
         coinsEarned,
         expEarned,
+        answersJson: JSON.stringify(answersJsonRecords),
       },
     });
 

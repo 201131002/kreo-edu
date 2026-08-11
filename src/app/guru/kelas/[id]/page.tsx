@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { FlashAlert } from "@/components/guru/flash-alert";
@@ -23,6 +24,7 @@ export default async function GuruClassDetailPage({
   const { id } = await params;
   const sp = await searchParams;
   const session = await auth();
+  const t = await getTranslations("guru");
   const activeTab = sp.tab === "kuis" ? "kuis" : "materi";
 
   const classItem = await prisma.class.findFirst({
@@ -43,7 +45,7 @@ export default async function GuruClassDetailPage({
     <div className="mx-auto max-w-4xl px-4 py-10">
       <GuruBreadcrumb
         items={[
-          { label: "Kelas Saya", href: "/guru/kelas" },
+          { label: t("classes.title"), href: "/guru/kelas" },
           { label: classItem.title },
         ]}
       />

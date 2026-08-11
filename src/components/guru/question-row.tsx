@@ -7,6 +7,7 @@ import {
 } from "@/actions/class";
 import { SubmitButton } from "@/components/guru/submit-button";
 import { Button } from "@/components/ui/button";
+import { ConfirmForm } from "@/components/ui/confirm-button";
 import { Input, Label, Textarea, Select } from "@/components/ui/input";
 import { Card, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Pencil, Trash2 } from "lucide-react";
@@ -139,25 +140,27 @@ export function QuestionRow({
           >
             <Pencil className="h-3.5 w-3.5" />
           </Button>
-          <form
-            action={(formData) => {
-              if (!confirm(`Hapus soal #${index + 1}?`)) return;
-              startTransition(() => deleteQuestionAction(formData));
-            }}
+          <ConfirmForm
+            confirmMessage={`Hapus soal #${index + 1}?`}
+            action={deleteQuestionAction}
           >
-            <input type="hidden" name="questionId" value={question.id} />
-            <input type="hidden" name="classId" value={classId} />
-            <input type="hidden" name="quizId" value={quizId} />
-            <Button
-              type="submit"
-              variant="ghost"
-              size="sm"
-              disabled={pending}
-              className="text-red-600 hover:bg-red-50"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </form>
+            {(isPending) => (
+              <>
+                <input type="hidden" name="questionId" value={question.id} />
+                <input type="hidden" name="classId" value={classId} />
+                <input type="hidden" name="quizId" value={quizId} />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="sm"
+                  disabled={pending || isPending}
+                  className="text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </>
+            )}
+          </ConfirmForm>
         </div>
       </div>
     </Card>

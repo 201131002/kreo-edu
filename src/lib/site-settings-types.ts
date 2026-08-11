@@ -1,4 +1,9 @@
 import { z } from "zod";
+import { faqDataSchema, type FaqData } from "@/lib/faq-defaults";
+import {
+  studentOnboardingSchema,
+  type StudentOnboardingData,
+} from "@/lib/student-onboarding-defaults";
 
 export const miniGameIconSchema = z.enum([
   "History",
@@ -28,6 +33,9 @@ export const statSettingSchema = z.object({
 export type MiniGameSetting = z.infer<typeof miniGameSettingSchema>;
 export type StatSetting = z.infer<typeof statSettingSchema>;
 
+export { faqDataSchema, studentOnboardingSchema };
+export type { FaqData, StudentOnboardingData };
+
 export type SiteSettingsData = {
   siteName: string;
   logoUrl: string | null;
@@ -42,6 +50,8 @@ export type SiteSettingsData = {
   gamesSubtitle: string;
   miniGames: MiniGameSetting[];
   stats: StatSetting[];
+  faq: FaqData;
+  studentOnboarding: StudentOnboardingData;
   ctaTitle: string;
   ctaDescription: string;
   ctaButtonText: string;

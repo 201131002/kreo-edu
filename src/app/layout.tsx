@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Quicksand } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
+import { StudentOnboardingShell } from "@/components/layout/student-onboarding-shell";
 import { Footer } from "@/components/layout/footer";
 import { getSiteSettings } from "@/lib/site-settings";
 
@@ -35,17 +38,23 @@ export async function generateMetadata(): Promise<Metadata> {
   return metadata;
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="id" className={`${quicksand.variable} ${jakarta.variable} h-full`}>
+    <html lang={locale} className={`${quicksand.variable} ${jakarta.variable} h-full`}>
       <body className="flex min-h-full flex-col antialiased">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <NextIntlClientProvider locale={locale} messages={messages} key={locale}>
+          <Navbar />
+          <StudentOnboardingShell />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

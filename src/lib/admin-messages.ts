@@ -17,6 +17,11 @@ export const ADMIN_FLASH_MESSAGES: Record<
   },
   unauthorized: { type: "error", text: "Akses ditolak." },
   "homepage-disimpan": { type: "success", text: "Pengaturan homepage berhasil disimpan." },
+  "faq-disimpan": { type: "success", text: "FAQ berhasil disimpan." },
+  "onboarding-disimpan": {
+    type: "success",
+    text: "Popup panduan siswa berhasil disimpan.",
+  },
   "logo-diubah": { type: "success", text: "Logo situs berhasil diperbarui." },
   "logo-dihapus": { type: "success", text: "Logo situs dihapus — kembali ke ikon default." },
   "tidak-ada-logo": { type: "error", text: "Belum ada logo untuk dihapus." },

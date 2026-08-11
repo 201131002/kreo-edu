@@ -12,6 +12,25 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kreo -d kreo_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://kreo:kreo123@postgres:5432/kreo_dev"
+      AUTH_SECRET: "docker-dev-secret-change-in-production"
+      AUTH_URL: "http://localhost:3000"
+      AUTH_TRUST_HOST: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:

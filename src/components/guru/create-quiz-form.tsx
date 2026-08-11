@@ -14,7 +14,7 @@ export function CreateQuizForm({ classId }: { classId: string }) {
         <Input
           id="quiz-title"
           name="title"
-          placeholder="Contoh: Kuis Tata Surya"
+          placeholder="Contoh: Kuis Tata Surya (bukan Quis)"
           required
         />
       </div>

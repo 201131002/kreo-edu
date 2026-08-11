@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { AdminFlashAlert } from "@/components/admin/flash-alert";
 import { CreateShopItemForm } from "@/components/admin/create-shop-item-form";
@@ -12,14 +13,12 @@ export default async function AdminTokoPage({
   searchParams: Promise<{ success?: string; error?: string }>;
 }) {
   const sp = await searchParams;
+  const t = await getTranslations("admin.shop");
   const items = await prisma.shopItem.findMany({ orderBy: { priceCoins: "asc" } });
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <PageHeader
-        title="Kelola Toko Border"
-        description="Upload border PNG dan atur harga koin"
-      />
+      <PageHeader title={t("title")} description={t("description")} />
 
       <Suspense>
         <AdminFlashAlert success={sp.success} error={sp.error} />

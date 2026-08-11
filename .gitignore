@@ -67,12 +67,15 @@ yarn-error.log*
 !.vscode/extensions.json
 !.vscode/settings.json.example
 
-# Grok / agent local session noise (keep project skills if you commit them intentionally)
-# .grok/
+# Thesis / skripsi / AI documentation — excluded from public repo
+/data/
+/revisi/
+*.zip
+qids.ts
 
-# data/ — large or personal reference PDFs (skripsi sumber, contoh TA orang lain)
-# Hapus 2 baris di bawah jika ingin commit PDF ke remote.
-/data/skripsi/referensi/*.pdf
+# Agent / IDE local config
+.grok/
+.claude/
 
 # Cookie jars / temp files from manual black-box runs
 /tmp/

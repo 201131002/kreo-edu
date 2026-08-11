@@ -1,6 +1,6 @@
 # KREO — Platform Belajar Gamifikasi
 
-Platform belajar berbasis gamifikasi untuk siswa Sekolah Dasar. Mengubah proses belajar menjadi petualangan interaktif dengan sistem EXP, koin, lencana, dan reward. Dibangun sebagai tugas akhir skripsi.
+Platform belajar berbasis gamifikasi untuk siswa Sekolah Dasar. Mengubah proses belajar menjadi petualangan interaktif dengan sistem EXP, koin, lencana, dan reward.
 
 ## Fitur Utama
 
@@ -35,13 +35,13 @@ Platform belajar berbasis gamifikasi untuk siswa Sekolah Dasar. Mengubah proses 
 | Tailwind CSS | v4 | Styling utility-first |
 | Zod | v4 | Validasi schema |
 | Framer Motion | 12 | Animasi UI |
-| next-intl | 4 | Internasionalisasi |
+| next-intl | 4 | Internasionalisasi (ID/EN) |
 
 ## Struktur Proyek
 
 ```
 kreo/
-├── prisma/              # Schema DB, migrasi, seed
+├── prisma/              # Schema DB, migrasi, seed data
 ├── public/              # Aset statis
 ├── scripts/             # Script deploy & utilitas
 ├── src/
@@ -51,11 +51,12 @@ kreo/
 │   │   ├── guru/        # Halaman guru
 │   │   ├── dashboard/   # Dashboard per role
 │   │   ├── kelas/       # Halaman kuis siswa
-│   │   └── ...          # Auth, pengaturan, laporan
+│   │   └── ...          # Auth, pengaturan, laporan, toko
 │   ├── components/      # Komponen UI reusable
 │   ├── i18n/            # Konfigurasi internasionalisasi
-│   └── lib/             # Utility, auth config, services
-├── data/                # Dokumen skripsi & pengujian
+│   ├── lib/             # Utility, auth config, services
+│   └── middleware.ts    # Auth & intl middleware
+├── messages/            # File terjemahan (id.json, en.json)
 ├── Dockerfile           # Multi-stage Docker build
 ├── docker-compose.yml   # Orkestrasi app + PostgreSQL
 └── .env.example         # Template variabel lingkungan
@@ -73,7 +74,7 @@ kreo/
 
 ### Alur Penggunaan
 
-1. **Login** di `/masuk` menggunakan akun demo atau akun baru via `/daftar`
+1. **Login** di `/masuk` menggunakan akun demo atau daftar akun baru via `/daftar`
 2. **Siswa**: buka dashboard → pilih kelas → kerjakan kuis → kumpulkan EXP & koin → tukar reward di toko
 3. **Guru**: buat kelas → tambah siswa → buat bank soal → assign kuis ke kelas → pantau analitik
 4. **Admin**: kelola pengguna → konfigurasi lencana & toko → monitor analitik platform
@@ -89,8 +90,8 @@ kreo/
 
 1. **Clone repository**
    ```bash
-   git clone <url-repository>
-   cd kreo
+   git clone https://github.com/<username>/kreo-edu.git
+   cd kreo-edu
    ```
 
 2. **Jalankan aplikasi**
@@ -125,7 +126,7 @@ kreo/
 
 ### Variabel Lingkungan
 
-File `.env.example` berisi template konfigurasi. Untuk produksi, ubah nilai berikut di `docker-compose.yml`:
+Salin `.env.example` ke `.env` dan sesuaikan nilai berikut:
 
 | Variabel | Deskripsi |
 |----------|-----------|
@@ -159,20 +160,8 @@ npm run dev
 | `npm run db:seed` | Isi data demo |
 | `npm run db:studio` | Prisma Studio GUI |
 
-## Dokumentasi
-
-Semua dokumen non-kode ada di folder **[`data/`](./data/)**:
-
-| Path | Isi |
-|------|-----|
-| [`data/produk/`](./data/produk/) | Design system, tech stack, changelog |
-| [`data/products-manualbook/`](./data/products-manualbook/) | Manual book PDF + storyboard screenshots |
-| [`data/pengujian/`](./data/pengujian/) | Black box testing, report, UAT |
-| [`data/skripsi/`](./data/skripsi/) | Naskah skripsi, revisi, diagram |
-| [`data/audit/`](./data/audit/) | Audit security, performance, UI/UX |
-
 ## Lisensi
 
-Proyek tugas akhir. Hak cipta © 2026.
+Hak cipta © 2026.
 
-</parameter>
+</content>

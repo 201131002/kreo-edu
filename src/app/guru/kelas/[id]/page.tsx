@@ -30,7 +30,10 @@ export default async function GuruClassDetailPage({
   const classItem = await prisma.class.findFirst({
     where: { id, teacherId: session!.user.id },
     include: {
-      materials: { orderBy: { createdAt: "desc" } },
+      materials: {
+        orderBy: { createdAt: "desc" },
+        include: { media: { orderBy: { order: "asc" } } },
+      },
       quizzes: {
         include: { _count: { select: { questions: true } } },
         orderBy: { createdAt: "desc" },
@@ -40,6 +43,24 @@ export default async function GuruClassDetailPage({
   });
 
   if (!classItem) notFound();
+
+  // Statistik attempt per kuis: jumlah siswa unik + rata-rata skor terbaik per siswa
+  const attempts = await prisma.quizAttempt.findMany({
+    where: { quiz: { classId: id } },
+    select: { quizId: true, studentId: true, score: true },
+  });
+  // skor terbaik per siswa per kuis (retry tidak dihitung ganda)
+  const statsByQuiz = new Map<string, { participants: Set<string>; bestByStudent: Map<string, number> }>();
+  for (const a of attempts) {
+    const s = statsByQuiz.get(a.quizId) ?? {
+      participants: new Set<string>(),
+      bestByStudent: new Map<string, number>(),
+    };
+    s.participants.add(a.studentId);
+    const prev = s.bestByStudent.get(a.studentId) ?? 0;
+    if (a.score > prev) s.bestByStudent.set(a.studentId, a.score);
+    statsByQuiz.set(a.quizId, s);
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -122,19 +143,31 @@ export default async function GuruClassDetailPage({
                 Kuis Tersimpan ({classItem.quizzes.length})
               </h2>
               <div className="space-y-3">
-                {classItem.quizzes.map((q) => (
-                  <QuizRow
-                    key={q.id}
-                    classId={id}
-                    quiz={{
-                      id: q.id,
-                      title: q.title,
-                      rewardExp: q.rewardExp,
-                      rewardCoins: q.rewardCoins,
-                      questionCount: q._count.questions,
-                    }}
-                  />
-                ))}
+                {classItem.quizzes.map((q) => {
+                  const stats = statsByQuiz.get(q.id);
+                  return (
+                    <QuizRow
+                      key={q.id}
+                      classId={id}
+                      quiz={{
+                        id: q.id,
+                        title: q.title,
+                        rewardExp: q.rewardExp,
+                        rewardCoins: q.rewardCoins,
+                        questionCount: q._count.questions,
+                        participantCount: stats?.participants.size ?? 0,
+                        avgScore:
+                          stats && stats.bestByStudent.size > 0
+                            ? Math.round(
+                                [...stats.bestByStudent.values()].reduce((sum, s) => sum + s, 0) /
+                                  stats.bestByStudent.size,
+                              )
+                            : null,
+                        enrollmentCount: classItem._count.enrollments,
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

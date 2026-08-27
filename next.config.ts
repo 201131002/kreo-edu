@@ -5,6 +5,11 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "150mb",
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -31,6 +36,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com",
               "font-src 'self'",
               "connect-src 'self' https://*.upstash.io",
+              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
+              "media-src 'self'",
               "frame-ancestors 'none'",
             ].join("; "),
           },

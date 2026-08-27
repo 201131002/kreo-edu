@@ -1,8 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="90" stroke="#0369a1" stroke-width="5"/>
-  <path d="M30 55 Q45 45 60 55 T90 55 T120 55 T150 55" stroke="#0ea5e9" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M50 145 Q65 135 80 145 T110 145 T140 145 T170 145" stroke="#38bdf8" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <circle cx="45" cy="100" r="5" fill="#7dd3fc"/><circle cx="155" cy="100" r="5" fill="#7dd3fc"/>
-  <path d="M100 12 L105 22 L100 18 L95 22 Z" fill="#0284c7"/>
-  <path d="M100 188 L105 178 L100 182 L95 178 Z" fill="#0284c7"/>
+  <defs>
+    <linearGradient id="ocG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e8f9"/>
+      <stop offset="0.45" stop-color="#0891b2"/>
+      <stop offset="1" stop-color="#155e75"/>
+    </linearGradient>
+    <linearGradient id="ocWave" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#a5f3fc"/><stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#ocG)" stroke-width="10"/>
+  <circle cx="100" cy="100" r="80" stroke="#cffafe" stroke-width="2.5"/>
+
+  <!-- waves at cardinal points -->
+  <path d="M78 12 q11 -8 22 0 q11 8 22 0" stroke="url(#ocWave)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M78 188 q11 8 22 0 q11 -8 22 0" stroke="url(#ocWave)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M12 78 q-8 11 0 22 q8 11 0 22" stroke="#67e8f9" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M188 78 q8 11 0 22 q-8 11 0 22" stroke="#67e8f9" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- bubbles -->
+  <circle cx="46" cy="38" r="4" fill="#a5f3fc"/><circle cx="154" cy="162" r="4" fill="#a5f3fc"/>
+  <circle cx="160" cy="40" r="2.5" fill="#cffafe"/><circle cx="40" cy="160" r="2.5" fill="#cffafe"/>
 </svg>

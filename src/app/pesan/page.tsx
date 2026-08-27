@@ -27,7 +27,10 @@ export default async function PesanPage({
   const role = session!.user.role;
 
   const classes = await getAccessibleClasses(session!.user.id, role);
-  const activeClassId = sp.kelas ?? classes[0]?.id;
+  const requestClass = sp.kelas;
+  const activeClassId = classes.some((c) => c.id === requestClass)
+    ? requestClass
+    : classes[0]?.id;
 
   const messages = activeClassId
     ? await prisma.discussionMessage.findMany({

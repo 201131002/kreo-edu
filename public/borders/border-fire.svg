@@ -1,11 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="87" stroke="#ea580c" stroke-width="5"/>
-  <path d="M100 6 C108 20 95 28 100 38 C105 28 92 20 100 6Z" fill="#f97316"/>
-  <path d="M170 55 C158 62 160 72 152 78 C162 70 168 62 170 55Z" fill="#fb923c"/>
-  <path d="M194 100 C180 98 176 108 168 112 C178 104 186 100 194 100Z" fill="#f97316"/>
-  <path d="M170 145 C168 158 156 160 152 168 C162 158 168 150 170 145Z" fill="#fb923c"/>
-  <path d="M100 194 C92 180 105 172 100 162 C95 172 108 180 100 194Z" fill="#f97316"/>
-  <path d="M30 145 C32 158 44 160 48 168 C38 158 32 150 30 145Z" fill="#fb923c"/>
-  <path d="M6 100 C20 102 24 92 32 88 C22 96 14 100 6 100Z" fill="#f97316"/>
-  <path d="M30 55 C32 42 44 40 48 32 C38 42 32 50 30 55Z" fill="#fb923c"/>
+  <defs>
+    <linearGradient id="fiG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fdba74"/>
+      <stop offset="0.5" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#fiG)" stroke-width="10"/>
+  <circle cx="100" cy="100" r="80" stroke="#fed7aa" stroke-width="2.5" stroke-dasharray="6 7"/>
+
+  <!-- flames licking inward at four points -->
+  <path d="M100 4 C110 20 92 28 100 44 C108 32 106 22 112 16 C114 26 122 30 118 42 C126 34 124 20 116 8 Z"
+        fill="#f97316"/>
+  <path d="M100 196 C90 180 108 172 100 156 C92 168 94 178 88 184 C86 174 78 170 82 158 C74 166 76 180 84 192 Z"
+        fill="#f97316"/>
+  <path d="M4 100 C20 90 28 108 44 100 C32 92 22 94 16 88 C26 86 30 78 42 82 C34 74 20 76 8 84 Z"
+        fill="#fb923c"/>
+  <path d="M196 100 C180 110 172 92 156 100 C168 108 178 106 184 112 C174 114 170 122 158 118 C166 126 180 124 192 116 Z"
+        fill="#fb923c"/>
 </svg>

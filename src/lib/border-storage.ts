@@ -44,7 +44,9 @@ export async function deleteBorderImage(url: string): Promise<void> {
     }
 
     if (isLocalBorderUrl(url)) {
-      const filepath = path.join(process.cwd(), "public", url);
+      const filepath = path.resolve(process.cwd(), "public", url);
+      const uploadsRoot = path.resolve(process.cwd(), "public", "uploads");
+      if (!filepath.startsWith(uploadsRoot)) return;
       await unlink(filepath);
     }
   } catch {

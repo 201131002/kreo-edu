@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { validateAvatarFile } from "@/lib/image-validation";
 import { deleteBorderImage, saveBorderImage } from "@/lib/border-storage";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -48,19 +49,33 @@ export async function purchaseItemAction(formData: FormData): Promise<void> {
     },
   });
 
-  if (owned) return;
+  if (owned) shopRedirect("/toko", "info=item-sudah-dimiliki");
 
-  if (profile.virtualCurrency < item.priceCoins) return;
+  try {
+    await prisma.$transaction(async (tx) => {
+      const deducted = await tx.studentProfile.updateMany({
+        where: { id: profile.id, virtualCurrency: { gte: item.priceCoins } },
+        data: { virtualCurrency: { decrement: item.priceCoins } },
+      });
 
-  await prisma.$transaction([
-    prisma.studentProfile.update({
-      where: { id: profile.id },
-      data: { virtualCurrency: profile.virtualCurrency - item.priceCoins },
-    }),
-    prisma.studentInventory.create({
-      data: { studentId: profile.id, itemId },
-    }),
-  ]);
+      if (deducted.count !== 1) {
+        // Saldo tidak cukup atau race condition — beri feedback ke user
+        shopRedirect("/toko", "error=saldo-tidak-cukup");
+      }
+
+      await tx.studentInventory.create({
+        data: { studentId: profile.id, itemId },
+      });
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return;
+    }
+    throw error;
+  }
 
   revalidatePath("/toko");
   revalidatePath("/inventori");

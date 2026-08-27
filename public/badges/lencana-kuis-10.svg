@@ -1,7 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <circle cx="60" cy="60" r="54" fill="#eff6ff" stroke="#3b82f6" stroke-width="6"/>
-  <path d="M60 24 L66 44 L60 38 L54 44 Z" fill="#2563eb"/>
-  <rect x="38" y="48" width="44" height="32" rx="6" fill="#60a5fa"/>
-  <path d="M48 58 L56 66 L74 48" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="60" y="74" text-anchor="middle" font-size="18" font-weight="bold" fill="#1d4ed8" font-family="sans-serif">10</text>
+  <defs>
+    <linearGradient id="medalRoyal" x1="30" y1="24" x2="90" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#93c5fd"/>
+      <stop offset="0.55" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="ribbonGoldL" x1="38" y1="66" x2="52" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b45309"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="ribbonGoldR" x1="68" y1="112" x2="82" y2="66" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#b45309"/>
+    </linearGradient>
+    <radialGradient id="shineRoyal" cx="0.35" cy="0.3" r="0.75">
+      <stop stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- laurel hints -->
+  <path d="M22 46 q-6 14 2 26" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M98 46 q6 14 -2 26" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7"/>
+
+  <!-- ribbons -->
+  <path d="M44 62 L36 108 L54 98 L60 106 L60 74 Z" fill="url(#ribbonGoldL)"/>
+  <path d="M76 62 L84 108 L66 98 L60 106 L60 74 Z" fill="url(#ribbonGoldR)"/>
+
+  <!-- medal body -->
+  <circle cx="60" cy="48" r="34" fill="url(#medalRoyal)"/>
+  <circle cx="60" cy="48" r="27" fill="none" stroke="#dbeafe" stroke-width="2.5" opacity="0.85"/>
+
+  <!-- trophy emblem -->
+  <path d="M50 36 h20 v9 a10 10 0 0 1 -20 0 Z" fill="#fef9c3" stroke="#facc15" stroke-width="1.4"/>
+  <path d="M50 38 h-6 a7 7 0 0 0 7 8 M70 38 h6 a7 7 0 0 1 -7 8"
+        stroke="#facc15" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M58 54 h4 v5 h-4 Z" fill="#fef9c3"/>
+  <rect x="53" y="59" width="14" height="3.5" rx="1.5" fill="#fde047"/>
+
+  <!-- gloss -->
+  <circle cx="60" cy="48" r="34" fill="url(#shineRoyal)"/>
+
+  <!-- sparkles -->
+  <path d="M94 20 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#bfdbfe"/>
+  <path d="M24 24 l1.6 4.2 4.2 1.6 -4.2 1.6 -1.6 4.2 -1.6 -4.2 -4.2 -1.6 4.2 -1.6 Z" fill="#bfdbfe" opacity="0.9"/>
 </svg>

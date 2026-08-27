@@ -104,7 +104,7 @@ export async function updateUserRoleAction(formData: FormData): Promise<void> {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { role: role as UserRole },
+    data: { role: role as UserRole, tokenVersion: { increment: 1 } },
   });
 
   if (role === "SISWA") {

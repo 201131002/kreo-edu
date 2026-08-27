@@ -19,7 +19,6 @@ export default async function PeringkatPage() {
           id: true,
           nama: true,
           imageUrl: true,
-          _count: { select: { quizAttempts: true } },
         },
       },
       activeBorder: {
@@ -30,6 +29,19 @@ export default async function PeringkatPage() {
       },
     },
   });
+
+  const passedQuizzes = await prisma.quizAttempt.findMany({
+    where: { score: { gte: 60 } },
+    distinct: ["studentId", "quizId"],
+    select: { studentId: true, quizId: true },
+  });
+  const passedCountByStudent = new Map<string, number>();
+  for (const attempt of passedQuizzes) {
+    passedCountByStudent.set(
+      attempt.studentId,
+      (passedCountByStudent.get(attempt.studentId) ?? 0) + 1
+    );
+  }
 
   const leaders = profiles.map((p, index) => ({
     rank: index + 1,
@@ -42,7 +54,7 @@ export default async function PeringkatPage() {
     level: p.currentLevel,
     exp: p.currentExp,
     coins: p.virtualCurrency,
-    quizCount: p.user._count.quizAttempts,
+    quizCount: passedCountByStudent.get(p.user.id) ?? 0,
     isCurrentUser: p.user.id === session!.user.id,
   }));
 

@@ -28,6 +28,7 @@ async function grantBadges(
       studentId: studentProfileId,
       badgeId,
     })),
+    skipDuplicates: true,
   });
 
   return toCreate.length;
@@ -58,7 +59,8 @@ export async function syncEarnedBadges(
         case "QUIZ_COUNT":
           return quizCount >= badge.criteriaValue;
         case "FIRST_QUIZ":
-          return quizCount >= 1;
+          // criteriaValue=0 (badge Perdana) berarti kuis pertama; >0 berarti N kuis berbeda
+          return quizCount >= Math.max(1, badge.criteriaValue);
         default:
           return false;
       }

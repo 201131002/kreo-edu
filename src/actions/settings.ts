@@ -84,9 +84,11 @@ export async function changePasswordAction(
   }
 
   const hashed = await bcrypt.hash(newPassword, 12);
+  // Increment tokenVersion agar semua sesi JWT yang ada (termasuk yang dicuri)
+  // tidak lagi valid setelah password diganti.
   await prisma.user.update({
     where: { id: user.id },
-    data: { password: hashed },
+    data: { password: hashed, tokenVersion: { increment: 1 } },
   });
 
   settingsRedirect("success=password-diubah");

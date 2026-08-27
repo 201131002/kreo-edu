@@ -1,6 +1,49 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <circle cx="60" cy="60" r="54" fill="#fef3c7" stroke="#f59e0b" stroke-width="6"/>
-  <path d="M60 10 L70 40 L60 32 L50 40 Z" fill="#d97706"/>
-  <path d="M30 50 L50 44 L60 24 L70 44 L90 50 L78 68 L80 90 L60 80 L40 90 L42 68 Z" fill="#fbbf24"/>
-  <text x="60" y="72" text-anchor="middle" font-size="18" font-weight="bold" fill="#92400e" font-family="sans-serif">10</text>
+  <defs>
+    <linearGradient id="medalGold" x1="30" y1="24" x2="90" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fde68a"/>
+      <stop offset="0.5" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="ribbonRedL" x1="38" y1="66" x2="52" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b91c1c"/>
+      <stop offset="1" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="ribbonRedR" x1="68" y1="112" x2="82" y2="66" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ef4444"/>
+      <stop offset="1" stop-color="#b91c1c"/>
+    </linearGradient>
+    <radialGradient id="shineGold" cx="0.35" cy="0.3" r="0.75">
+      <stop stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- laurel hints -->
+  <path d="M22 46 q-6 14 2 26" stroke="#d97706" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M98 46 q6 14 -2 26" stroke="#d97706" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7"/>
+
+  <!-- ribbons -->
+  <path d="M44 62 L36 108 L54 98 L60 106 L60 74 Z" fill="url(#ribbonRedL)"/>
+  <path d="M76 62 L84 108 L66 98 L60 106 L60 74 Z" fill="url(#ribbonRedR)"/>
+
+  <!-- medal body -->
+  <circle cx="60" cy="48" r="34" fill="url(#medalGold)"/>
+  <circle cx="60" cy="48" r="27" fill="none" stroke="#fef3c7" stroke-width="2.5" opacity="0.9"/>
+
+  <!-- crown emblem -->
+  <path d="M42 56 L45 38 L53 47 L60 33 L67 47 L75 38 L78 56 Q69 61 60 61 Q51 61 42 56 Z"
+        fill="#fffbeb" stroke="#fbbf24" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="45" cy="35.5" r="3" fill="#dc2626"/>
+  <circle cx="60" cy="30.5" r="3.2" fill="#dc2626"/>
+  <circle cx="75" cy="35.5" r="3" fill="#dc2626"/>
+
+  <!-- gloss -->
+  <circle cx="60" cy="48" r="34" fill="url(#shineGold)"/>
+
+  <!-- sparkles -->
+  <path d="M94 20 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#fef08a"/>
+  <path d="M24 24 l1.6 4.2 4.2 1.6 -4.2 1.6 -1.6 4.2 -1.6 -4.2 -4.2 -1.6 4.2 -1.6 Z" fill="#fef08a" opacity="0.9"/>
+  <path d="M28 80 l1.4 3.6 3.6 1.4 -3.6 1.4 -1.4 3.6 -1.4 -3.6 -3.6 -1.4 3.6 -1.4 Z" fill="#fed7aa" opacity="0.9"/>
 </svg>

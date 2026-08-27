@@ -8,6 +8,11 @@ export async function GET(request: Request) {
   if ("error" in result) return result.error;
 
   const { summary, teacherName } = result;
+  // Siswa yang belum pernah attempt (bestScore 0, tanpa tanggal) bukan
+  // kasus "Belum Lulus" — mereka sudah tercakup di daftar "Belum Attempt".
+  const studentsNotPassed = summary.studentsNotPassed.filter(
+    (s) => !(s.lastAttemptAt === null && s.bestScore === 0)
+  );
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
   doc.setFontSize(16);
@@ -24,7 +29,7 @@ export async function GET(request: Request) {
       ["Skor 0-59", String(summary.histogram.low)],
       ["Skor 60-79", String(summary.histogram.medium)],
       ["Skor 80-100", String(summary.histogram.high)],
-      ["Siswa Belum Lulus", String(summary.studentsNotPassed.length)],
+      ["Siswa Belum Lulus", String(studentsNotPassed.length)],
       ["Siswa Belum Attempt", String(summary.studentsNotAttempted.length)],
     ],
     theme: "grid",
@@ -71,7 +76,7 @@ export async function GET(request: Request) {
   autoTable(doc, {
     startY: 18,
     head: [["Siswa", "Kelas", "Kuis", "Skor Terbaik"]],
-    body: summary.studentsNotPassed.map((row) => [
+    body: studentsNotPassed.map((row) => [
       row.studentName,
       row.classTitle,
       row.quizTitle,

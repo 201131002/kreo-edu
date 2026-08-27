@@ -60,6 +60,16 @@ yarn-error.log*
 !/public/uploads/borders/.gitkeep
 /public/uploads/site/*
 !/public/uploads/site/.gitkeep
+/public/uploads/images/*
+!/public/uploads/images/.gitkeep
+/public/uploads/videos/*
+!/public/uploads/videos/.gitkeep
+/public/uploads/audios/*
+!/public/uploads/audios/.gitkeep
+/public/uploads/pdfs/*
+!/public/uploads/pdfs/.gitkeep
+/public/uploads/ebooks/*
+!/public/uploads/ebooks/.gitkeep
 
 # Local IDE / editor (optional)
 .idea/

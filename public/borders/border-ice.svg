@@ -1,10 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="89" stroke="#7dd3fc" stroke-width="6"/>
-  <circle cx="100" cy="100" r="82" stroke="#e0f2fe" stroke-width="2"/>
-  <path d="M100 10 L104 26 L100 20 L96 26 Z" fill="#38bdf8"/>
-  <path d="M100 190 L104 174 L100 180 L96 174 Z" fill="#38bdf8"/>
-  <path d="M10 100 L26 96 L20 100 L26 104 Z" fill="#38bdf8"/>
-  <path d="M190 100 L174 104 L180 100 L174 96 Z" fill="#38bdf8"/>
-  <path d="M48 48 L58 58 M152 48 L142 58 M48 152 L58 142 M152 152 L142 142" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="62" cy="62" r="4" fill="#bae6fd"/><circle cx="138" cy="138" r="4" fill="#bae6fd"/>
+  <defs>
+    <linearGradient id="icG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#bae6fd"/>
+      <stop offset="0.5" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#icG)" stroke-width="9"/>
+  <circle cx="100" cy="100" r="81" stroke="#e0f2fe" stroke-width="2.5"/>
+
+  <!-- ice crystals at cardinal points -->
+  <path d="M100 4 L106 14 L100 24 L94 14 Z M88 12 L112 12 L108 18 L92 18 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+  <path d="M100 196 L106 186 L100 176 L94 186 Z M88 188 L112 188 L108 182 L92 182 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+  <path d="M4 100 L14 94 L24 100 L14 106 Z M12 88 L12 112 L18 108 L18 92 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+  <path d="M196 100 L186 94 L176 100 L186 106 Z M188 88 L188 112 L182 108 L182 92 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+
+  <!-- snowflakes -->
+  <g stroke="#7dd3fc" stroke-width="2" stroke-linecap="round">
+    <path d="M158 40 v10 M153.5 42.5 l9 5 M162.5 42.5 l-9 5"/>
+    <path d="M42 160 v10 M37.5 162.5 l9 5 M46.5 162.5 l-9 5"/>
+  </g>
 </svg>

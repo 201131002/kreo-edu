@@ -1,7 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="89" stroke="#4f46e5" stroke-width="5"/>
-  <path d="M108 10 L92 50 L108 50 L88 90 L120 48 L102 48 L118 10Z" fill="#facc15" stroke="#ca8a04" stroke-width="1"/>
-  <path d="M112 190 L96 150 L112 150 L92 110 L124 152 L106 152 L122 190Z" fill="#fde047"/>
-  <path d="M10 108 L50 92 L50 108 L90 88 L48 120 L48 102 L10 118Z" fill="#facc15"/>
-  <path d="M190 92 L150 108 L150 92 L110 112 L152 80 L152 98 L190 82Z" fill="#fde047"/>
+  <defs>
+    <linearGradient id="ltG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fde047"/>
+      <stop offset="0.5" stop-color="#facc15"/>
+      <stop offset="1" stop-color="#a16207"/>
+    </linearGradient>
+    <filter id="ltGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#ltG)" stroke-width="9"/>
+  <circle cx="100" cy="100" r="81" stroke="#fef9c3" stroke-width="2.5" stroke-dasharray="8 8"/>
+
+  <!-- lightning bolts -->
+  <path d="M104 6 L88 34 L98 36 L90 56 L110 28 L100 26 Z" fill="#facc15" filter="url(#ltGlow)"/>
+  <path d="M96 194 L112 166 L102 164 L110 144 L90 172 L100 174 Z" fill="#facc15" filter="url(#ltGlow)"/>
+  <path d="M6 96 L34 112 L36 102 L56 110 L28 130 L26 120 Z" fill="#fde047"/>
+  <path d="M194 104 L166 88 L164 98 L144 90 L172 70 L174 80 Z" fill="#fde047"/>
+
+  <!-- spark dots -->
+  <circle cx="44" cy="40" r="3" fill="#fef08a"/><circle cx="156" cy="160" r="3" fill="#fef08a"/>
 </svg>

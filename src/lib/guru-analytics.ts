@@ -55,6 +55,21 @@ export type StudentNotAttempted = {
   classTitle: string;
 };
 
+export type WeeklyTrend = {
+  weekStart: Date;
+  attemptCount: number;
+  avgScore: number;
+};
+
+export type MaterialStat = {
+  materialId: string;
+  materialTitle: string;
+  classTitle: string;
+  enrolledCount: number;
+  completedCount: number;
+  completionRate: number;
+};
+
 export type GuruAnalyticsSummary = {
   filters: GuruAnalyticsFilters;
   quizAvgScores: QuizAvgScore[];
@@ -62,6 +77,7 @@ export type GuruAnalyticsSummary = {
   hardestQuestions: HardestQuestion[];
   studentsNotPassed: StudentNotPassed[];
   studentsNotAttempted: StudentNotAttempted[];
+  weeklyTrend: WeeklyTrend[];
 };
 
 export async function verifyTeacherOwnsClass(
@@ -425,17 +441,134 @@ export async function getStudentsNotAttempted(
   );
 }
 
+export function getWeekStartKey(date: Date): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - d.getDay()); // Sunday-based buckets
+  return d.toISOString();
+}
+
+export async function getWeeklyTrend(
+  teacherId: string,
+  filters: GuruAnalyticsFilters,
+  weeks = 8
+): Promise<WeeklyTrend[]> {
+  const dateTo =
+    filters.dateTo ??
+    (() => {
+      const now = new Date();
+      now.setHours(23, 59, 59, 999);
+      return now;
+    })();
+
+  const rawStart = new Date(dateTo);
+  rawStart.setDate(rawStart.getDate() - (weeks * 7 - 1));
+  const start = new Date(getWeekStartKey(rawStart));
+
+  const base = buildAttemptWhere(teacherId, filters);
+  // 8-week floor, but never earlier than the user's explicit dateFrom bound,
+  // and always keeping the dateTo lte that buildAttemptWhere already set
+  const baseCreatedAt =
+    base.createdAt && typeof base.createdAt === "object" && !(base.createdAt instanceof Date)
+      ? base.createdAt
+      : {};
+  const originalFrom = baseCreatedAt.gte;
+  const effectiveStart = originalFrom && originalFrom > start ? originalFrom : start;
+
+  const attempts = await prisma.quizAttempt.findMany({
+    where: {
+      ...base,
+      createdAt: { ...baseCreatedAt, gte: effectiveStart },
+    },
+    select: { score: true, createdAt: true },
+  });
+
+  const weekKeys: string[] = [];
+  for (let i = 0; i < weeks; i += 1) {
+    const weekStart = new Date(start);
+    weekStart.setDate(weekStart.getDate() + i * 7);
+    weekKeys.push(weekStart.toISOString());
+  }
+
+  const buckets = new Map(weekKeys.map((key) => [key, { count: 0, scoreSum: 0 }]));
+  for (const attempt of attempts) {
+    const bucket = buckets.get(getWeekStartKey(attempt.createdAt));
+    if (!bucket) continue;
+    bucket.count += 1;
+    bucket.scoreSum += attempt.score;
+  }
+
+  return weekKeys.map((key) => {
+    const bucket = buckets.get(key)!;
+    return {
+      weekStart: new Date(key),
+      attemptCount: bucket.count,
+      avgScore: bucket.count > 0 ? Math.round(bucket.scoreSum / bucket.count) : 0,
+    };
+  });
+}
+
+export async function getMaterialStats(
+  teacherId: string
+): Promise<MaterialStat[]> {
+  const [grouped, materials] = await Promise.all([
+    prisma.materialProgress.groupBy({
+      by: ["materialId"],
+      where: {
+        status: "COMPLETED",
+        material: { class: { teacherId } },
+      },
+      _count: { id: true },
+    }),
+    prisma.material.findMany({
+      where: { class: { teacherId } },
+      select: {
+        id: true,
+        title: true,
+        class: {
+          select: {
+            title: true,
+            _count: { select: { enrollments: true } },
+          },
+        },
+      },
+      orderBy: [{ class: { title: "asc" } }, { createdAt: "asc" }],
+    }),
+  ]);
+
+  const completedByMaterial = new Map(
+    grouped.map((g) => [g.materialId, g._count.id])
+  );
+
+  return materials
+    .map((m) => {
+      const enrolled = m.class._count.enrollments;
+      const completed = completedByMaterial.get(m.id) ?? 0;
+      return {
+        materialId: m.id,
+        materialTitle: m.title,
+        classTitle: m.class.title,
+        enrolledCount: enrolled,
+        completedCount: completed,
+        completionRate:
+          enrolled > 0 ? Math.round((completed / enrolled) * 100) : 0,
+      };
+    })
+    .sort((a, b) => a.completionRate - b.completionRate);
+}
+
 export async function getGuruAnalyticsSummary(
   teacherId: string,
   filters: GuruAnalyticsFilters
 ): Promise<GuruAnalyticsSummary> {
-  const [quizAvgScores, histogram, hardestQuestions, studentsNotPassed, studentsNotAttempted] =
+  const [quizAvgScores, histogram, hardestQuestions, studentsNotPassed, studentsNotAttempted, weeklyTrend] =
     await Promise.all([
       getQuizAvgScores(teacherId, filters),
       getScoreHistogram(teacherId, filters),
       getHardestQuestions(teacherId, filters),
       getStudentsNotPassed(teacherId, filters),
       getStudentsNotAttempted(teacherId, filters),
+      getWeeklyTrend(teacherId, filters),
     ]);
 
   return {
@@ -445,6 +578,7 @@ export async function getGuruAnalyticsSummary(
     hardestQuestions,
     studentsNotPassed,
     studentsNotAttempted,
+    weeklyTrend,
   };
 }
 
@@ -465,6 +599,8 @@ export function parseAnalyticsFilters(searchParams: {
   if (searchParams.from) {
     const dateFrom = new Date(searchParams.from);
     if (!Number.isNaN(dateFrom.getTime())) {
+      // date-only values parse as UTC midnight; normalize to local day start
+      dateFrom.setHours(0, 0, 0, 0);
       filters.dateFrom = dateFrom;
     }
   }

@@ -37,6 +37,12 @@ export async function GET(request: Request) {
     ]);
   }
 
+  // Siswa yang belum pernah attempt (bestScore 0, tanpa tanggal) bukan
+  // kasus "Belum Lulus" — mereka sudah tercakup di daftar "Belum Attempt".
+  const studentsNotPassed = summary.studentsNotPassed.filter(
+    (s) => !(s.lastAttemptAt === null && s.bestScore === 0)
+  );
+
   const notPassedSheet = workbook.addWorksheet("Belum Lulus");
   notPassedSheet.addRow([
     "Siswa",
@@ -46,7 +52,7 @@ export async function GET(request: Request) {
     "Skor Terbaik",
     "Attempt Terakhir",
   ]);
-  for (const row of summary.studentsNotPassed) {
+  for (const row of studentsNotPassed) {
     notPassedSheet.addRow([
       row.studentName,
       row.studentEmail,

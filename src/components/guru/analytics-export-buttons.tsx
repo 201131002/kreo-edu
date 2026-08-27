@@ -7,11 +7,13 @@ export function AnalyticsExportButtons({
   quizId,
   from,
   to,
+  labels,
 }: {
   classId: string;
   quizId: string;
   from: string;
   to: string;
+  labels?: { excel?: string; pdf?: string };
 }) {
   const query = buildAnalyticsQueryString({
     classId: classId || undefined,
@@ -25,13 +27,13 @@ export function AnalyticsExportButtons({
       <a href={`/api/guru/analitik/export/excel${query}`} download>
         <Button type="button" variant="outline" size="sm">
           <FileSpreadsheet className="h-4 w-4" />
-          Export Excel
+          {labels?.excel ?? "Export Excel"}
         </Button>
       </a>
       <a href={`/api/guru/analitik/export/pdf${query}`} download>
         <Button type="button" variant="outline" size="sm">
           <FileText className="h-4 w-4" />
-          Export PDF
+          {labels?.pdf ?? "Export PDF"}
         </Button>
       </a>
     </div>

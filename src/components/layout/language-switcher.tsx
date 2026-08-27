@@ -62,7 +62,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
               item === "id" ? t("switchToIndonesian") : t("switchToEnglish")
             }
             className={cn(
-              "relative flex min-h-[28px] min-w-[2.25rem] items-center justify-center rounded-lg px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide transition sm:min-h-[32px] sm:min-w-[2.75rem] sm:px-2.5 sm:py-1 sm:text-xs",
+              "relative flex min-h-[36px] min-w-[2.25rem] items-center justify-center rounded-lg px-2 py-0.5 text-xs font-bold uppercase tracking-wide transition sm:min-h-[40px] sm:min-w-[2.75rem] sm:px-2.5",
               active
                 ? "bg-primary text-white shadow-sm"
                 : "text-muted hover:text-primary",

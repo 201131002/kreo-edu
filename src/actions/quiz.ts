@@ -38,24 +38,21 @@ export async function submitQuizAction(formData: FormData) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const attemptsToday = await prisma.quizAttempt.count({
-    where: {
-      studentId: session.user.id,
-      quizId,
-      createdAt: { gte: today },
-    },
-  });
-
-  if (attemptsToday >= MAX_ATTEMPTS_PER_DAY) {
-    return { error: "Kamu sudah mencapai batas 3 kali percobaan kuis hari ini" };
-  }
-
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId },
     include: { questions: true },
   });
 
   if (!quiz) return { error: "Kuis tidak ditemukan" };
+
+  if (session.user.role === "SISWA") {
+    const enrollment = await prisma.classEnrollment.findFirst({
+      where: { classId: quiz.classId, studentId: session.user.id },
+    });
+    if (!enrollment) {
+      return { error: "Kamu belum bergabung di kelas ini" };
+    }
+  }
 
   let correctAnswers = 0;
   const answersJsonRecords = quiz.questions.map((question) => {
@@ -84,61 +81,106 @@ export async function submitQuizAction(formData: FormData) {
   const passThreshold = 60;
   const passed = score >= passThreshold;
 
-  const previousAttempts = await prisma.quizAttempt.count({
-    where: { studentId: session.user.id, quizId },
-  });
-  const isFirstAttempt = previousAttempts === 0;
+  let result: {
+    newAttempt: { id: string };
+    coinsEarned: number;
+    expEarned: number;
+    isFirstAttempt: boolean;
+  };
 
-  const coinsEarned = isFirstAttempt
-    ? passed
-      ? quiz.rewardCoins
-      : Math.floor(quiz.rewardCoins * 0.3)
-    : 0;
-  const expEarned = isFirstAttempt
-    ? passed
-      ? quiz.rewardExp
-      : Math.floor(quiz.rewardExp * 0.3)
-    : 0;
+  try {
+    result = await prisma.$transaction(async (tx) => {
+      // Kunci per (studentId, quizId) agar dua submit bersamaan tidak
+      // beradu membaca batas harian / status "percobaan pertama".
+      // Parameter dipisah agar Prisma mengikatnya sebagai bound parameter,
+      // bukan interpolasi string mentah ke SQL.
+      await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${session.user.id} || ':' || ${quizId}))`;
 
-  const attempt = await prisma.$transaction(async (tx) => {
-    const newAttempt = await tx.quizAttempt.create({
-      data: {
-        quizId,
-        studentId: session.user.id,
-        score,
-        correctAnswers,
-        totalQuestions,
-        coinsEarned,
-        expEarned,
-        answersJson: JSON.stringify(answersJsonRecords),
-      },
-    });
+      const attemptsToday = await tx.quizAttempt.count({
+        where: {
+          studentId: session.user.id,
+          quizId,
+          createdAt: { gte: today },
+        },
+      });
 
-    const profile = await tx.studentProfile.findUnique({
-      where: { userId: session.user.id },
-    });
-
-    if (profile) {
-      let level = profile.currentLevel;
-
-      if (isFirstAttempt && (coinsEarned > 0 || expEarned > 0)) {
-        const newExp = profile.currentExp + expEarned;
-        level = calculateLevel(newExp);
-        await tx.studentProfile.update({
-          where: { userId: session.user.id },
-          data: {
-            currentExp: newExp,
-            currentLevel: level,
-            virtualCurrency: profile.virtualCurrency + coinsEarned,
-          },
-        });
+      if (attemptsToday >= MAX_ATTEMPTS_PER_DAY) {
+        throw new Error("MAX_ATTEMPTS_REACHED");
       }
 
-      await syncEarnedBadges(profile.id, session.user.id, level, tx);
-    }
+      const previousAttempts = await tx.quizAttempt.count({
+        where: { studentId: session.user.id, quizId },
+      });
+      const isFirstAttempt = previousAttempts === 0;
 
-    return newAttempt;
-  });
+      const coinsEarned = isFirstAttempt
+        ? passed
+          ? quiz.rewardCoins
+          : Math.floor(quiz.rewardCoins * 0.3)
+        : 0;
+      const expEarned = isFirstAttempt
+        ? passed
+          ? quiz.rewardExp
+          : Math.floor(quiz.rewardExp * 0.3)
+        : 0;
+
+      const newAttempt = await tx.quizAttempt.create({
+        data: {
+          quizId,
+          studentId: session.user.id,
+          score,
+          correctAnswers,
+          totalQuestions,
+          coinsEarned,
+          expEarned,
+          answersJson: JSON.stringify(answersJsonRecords),
+        },
+      });
+
+      const profile = await tx.studentProfile.findUnique({
+        where: { userId: session.user.id },
+      });
+
+      if (profile) {
+        let level = profile.currentLevel;
+
+        if (isFirstAttempt && (coinsEarned > 0 || expEarned > 0)) {
+          // Kenaikan kredit atomik: tidak membaca lalu menulis absolut
+          // sehingga submit bersamaan tidak saling menimpa.
+          const updated = await tx.studentProfile.update({
+            where: { userId: session.user.id },
+            data: {
+              currentExp: { increment: expEarned },
+              virtualCurrency: { increment: coinsEarned },
+            },
+          });
+          level = calculateLevel(updated.currentExp);
+          await tx.studentProfile.update({
+            where: { userId: session.user.id },
+            data: { currentLevel: level },
+          });
+        } else {
+          // Bukan first-attempt atau tidak ada reward: baca level terkini
+          // dari DB agar badge sync mendapat nilai yang akurat, bukan
+          // stale value dari awal transaksi.
+          const fresh = await tx.studentProfile.findUnique({
+            where: { userId: session.user.id },
+            select: { currentLevel: true },
+          });
+          if (fresh) level = fresh.currentLevel;
+        }
+
+        await syncEarnedBadges(profile.id, session.user.id, level, tx);
+      }
+
+      return { newAttempt, coinsEarned, expEarned, isFirstAttempt };
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "MAX_ATTEMPTS_REACHED") {
+      return { error: "Kamu sudah mencapai batas 3 kali percobaan kuis hari ini" };
+    }
+    throw error;
+  }
 
   revalidatePath("/dashboard/siswa");
   revalidatePath("/laporan");
@@ -149,13 +191,13 @@ export async function submitQuizAction(formData: FormData) {
 
   return {
     success: true,
-    attemptId: attempt.id,
+    attemptId: result.newAttempt.id,
     score,
     correctAnswers,
     totalQuestions,
-    coinsEarned,
-    expEarned,
-    isFirstAttempt,
+    coinsEarned: result.coinsEarned,
+    expEarned: result.expEarned,
+    isFirstAttempt: result.isFirstAttempt,
     classId: quiz.classId,
   };
 }

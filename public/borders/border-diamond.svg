@@ -1,11 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="90" stroke="#94a3b8" stroke-width="4"/>
-  <polygon points="100,8 108,20 100,16 92,20" fill="#38bdf8"/>
-  <polygon points="192,100 180,108 184,100 180,92" fill="#38bdf8"/>
-  <polygon points="100,192 108,180 100,184 92,180" fill="#38bdf8"/>
-  <polygon points="8,100 20,108 16,100 20,92" fill="#38bdf8"/>
-  <polygon points="55,35 65,45 55,55 45,45" fill="#7dd3fc" stroke="#0ea5e9"/>
-  <polygon points="145,35 155,45 145,55 135,45" fill="#7dd3fc" stroke="#0ea5e9"/>
-  <polygon points="55,145 65,155 55,165 45,155" fill="#7dd3fc" stroke="#0ea5e9"/>
-  <polygon points="145,145 155,155 145,165 135,155" fill="#7dd3fc" stroke="#0ea5e9"/>
+  <defs>
+    <linearGradient id="dmG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a5f3fc"/>
+      <stop offset="0.5" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#0e7490"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#dmG)" stroke-width="9"/>
+  <circle cx="100" cy="100" r="81" stroke="#ecfeff" stroke-width="2.5"/>
+
+  <!-- diamond facets at cardinal points -->
+  <path d="M100 4 L112 16 L100 28 L88 16 Z" fill="#cffafe" stroke="#0891b2" stroke-width="1.5"/>
+  <path d="M100 172 L112 184 L100 196 L88 184 Z" fill="#cffafe" stroke="#0891b2" stroke-width="1.5"/>
+  <path d="M4 100 L16 88 L28 100 L16 112 Z" fill="#cffafe" stroke="#0891b2" stroke-width="1.5"/>
+  <path d="M172 100 L184 88 L196 100 L184 112 Z" fill="#cffafe" stroke="#0891b2" stroke-width="1.5"/>
+
+  <!-- inner sparkle -->
+  <path d="M160 44 l2.6 6.6 6.6 2.6 -6.6 2.6 -2.6 6.6 -2.6 -6.6 -6.6 -2.6 6.6 -2.6 Z" fill="#67e8f9"/>
+  <path d="M40 156 l-2.6 -6.6 -6.6 -2.6 6.6 -2.6 2.6 -6.6 2.6 6.6 6.6 2.6 -6.6 2.6 Z" fill="#67e8f9"/>
 </svg>

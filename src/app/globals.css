@@ -3,9 +3,10 @@
 :root {
   --background: #f0f9ff;
   --foreground: #0f172a;
-  --primary: #0ea5e9;
-  --secondary: #f59e0b;
-  --tertiary: #8b5cf6;
+  /* Token aksen digelapkan agar teks putih di atasnya lolos WCAG AA (>= 4.5:1) */
+  --primary: #0369a1;     /* sky-700 — putih di atasnya 5.9:1 */
+  --secondary: #b45309;   /* amber-700 — putih di atasnya 4.7:1 */
+  --tertiary: #6d28d9;    /* violet-700 — putih di atasnya 6.3:1 */
   --muted: #64748b;
   --surface: #f8fafc;
 }
@@ -54,4 +55,19 @@ body {
 
 .animate-bounce-soft {
   animation: bounce-soft 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-bounce-soft {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

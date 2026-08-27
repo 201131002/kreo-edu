@@ -45,7 +45,10 @@ export default async function StudentDashboard() {
   const level = profile?.currentLevel ?? 1;
   const exp = profile?.currentExp ?? 0;
   const nextExp = expForNextLevel(level);
-  const progress = Math.min(100, Math.round((exp % nextExp) / nextExp * 100) || 0);
+  // Offset exp di dalam band level saat ini (level 1: band mulai dari 0)
+  const bandStart = 50 * level * (level - 1);
+  const offset = Math.max(0, exp - bandStart);
+  const progress = Math.min(100, Math.round((offset / nextExp) * 100));
 
   const quickLinks = [
     { href: "/kelas", title: t("selectClass"), icon: BookOpen, iconClassName: "text-primary" },

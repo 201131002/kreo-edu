@@ -453,6 +453,26 @@
       "noStudentsClass": "Belum ada siswa di kelas ini.",
       "inClass": " di {className}"
     },
+    "studentDetail": {
+      "studentsTitle": "Manajemen Siswa",
+      "backToStudents": "Kembali ke Daftar Siswa",
+      "avgScore": "Rata-rata Skor",
+      "quizzesPassed": "Kuis Lulus (≥{threshold})",
+      "materialsCompleted": "Materi Selesai",
+      "levelLabel": "Level Siswa",
+      "quizHistoryTitle": "Riwayat Kuis",
+      "materialProgressTitle": "Progress Materi",
+      "colQuiz": "Kuis",
+      "colClass": "Kelas",
+      "colDate": "Tanggal",
+      "colScore": "Skor",
+      "noMaterialProgress": "Belum ada progress materi.",
+      "status": {
+        "NOT_STARTED": "Belum Mulai",
+        "IN_PROGRESS": "Sedang Dibaca",
+        "COMPLETED": "Selesai"
+      }
+    },
     "analytics": {
       "title": "Analitik Kelas",
       "description": "Statistik kelas dan siswa yang Anda ajar — bukan data seluruh platform",
@@ -486,12 +506,18 @@
       "exportPdf": "Export PDF",
       "filterTitle": "Filter Analitik",
       "filterDesc": "Saring data berdasarkan kelas, kuis, dan rentang tanggal percobaan",
+      "classLabel": "Kelas",
+      "quizLabel": "Kuis",
       "allClasses": "Semua kelas",
       "allQuizzes": "Semua kuis",
       "fromDate": "Dari tanggal",
       "toDate": "Sampai tanggal",
       "applyFilter": "Terapkan Filter",
-      "resetFilter": "Reset"
+      "resetFilter": "Reset",
+      "weeklyTrendTitle": "Tren Percobaan 8 Pekan Terakhir",
+      "materialStatsTitle": "Statistik Materi — Selesai Dibaca",
+      "noMaterials": "Belum ada materi di kelas Anda.",
+      "showingOf": "Menampilkan {shown} dari {total}"
     },
     "jadwal": {
       "title": "Jadwal Belajar Siswa",
@@ -619,7 +645,29 @@
       "totalQuizzes": "Total Kuis",
       "completedQuizzes": "Kuis Diselesaikan",
       "avgScoreTitle": "Skor Rata-rata Global",
-      "avgScoreDesc": "Dari {count} percobaan kuis di seluruh platform"
+      "avgScoreDesc": "Dari {count} percobaan kuis di seluruh platform",
+      "activeUsers7d": "Aktif 7 Hari",
+      "activeUsers30d": "Aktif 30 Hari",
+      "roleGuru": "Guru",
+      "roleSiswa": "Siswa",
+      "roleAdmin": "Admin",
+      "filterTitle": "Filter Periode",
+      "fromDate": "Dari tanggal",
+      "toDate": "Sampai tanggal",
+      "applyFilter": "Terapkan",
+      "resetFilter": "Reset",
+      "growthTitle": "Pertumbuhan 8 Pekan Terakhir",
+      "colWeek": "Pekan Mulai",
+      "colNewUsers": "Pengguna Baru",
+      "colNewAttempts": "Percobaan Kuis",
+      "classRankingTitle": "Peringkat Kelas (Rata-rata Skor)",
+      "classMeta": "{students} siswa · {attempts} percobaan",
+      "hardestQuestionsTitle": "Soal Tersulit (Platform)",
+      "noQuestionData": "Belum ada data jawaban per soal.",
+      "roleDistTitle": "Distribusi Peran Pengguna",
+      "noData": "Belum ada data.",
+      "exportExcel": "Export Excel",
+      "exportPdf": "Export PDF"
     },
     "flash": {
       "userCreated": "Pengguna baru berhasil ditambahkan.",

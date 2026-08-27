@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { BadgeIcon } from "@/components/inventory/badge-icon";
 import { UserAvatar } from "@/components/user/user-avatar";
 import { cn } from "@/lib/utils";
-import { Coins, Crown, Medal, Star, Trophy } from "lucide-react";
+import { Coins, Crown, Star, Trophy } from "lucide-react";
 
 type Leader = {
   rank: number;
@@ -22,27 +22,34 @@ type Leader = {
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-400 text-white shadow-md">
-        <Crown className="h-5 w-5" />
+      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center">
+        <Crown className="absolute -top-3.5 left-1/2 h-5 w-5 -translate-x-1/2 text-amber-500 drop-shadow-sm" />
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-b from-amber-300 to-amber-500 ring-4 ring-amber-200/70 shadow-lg shadow-amber-400/40">
+          <span className="font-display text-xl font-black text-white drop-shadow-sm">1</span>
+        </div>
       </div>
     );
   }
   if (rank === 2) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-300 text-white shadow-md">
-        <Medal className="h-5 w-5" />
+      <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-b from-slate-100 to-slate-300 ring-4 ring-slate-200/80 shadow-md">
+          <span className="font-display text-lg font-black text-slate-600">2</span>
+        </div>
       </div>
     );
   }
   if (rank === 3) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-600 text-white shadow-md">
-        <Medal className="h-5 w-5" />
+      <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-b from-orange-300 to-amber-700 ring-4 ring-orange-200/70 shadow-md shadow-amber-700/30">
+          <span className="font-display text-lg font-black text-white drop-shadow-sm">3</span>
+        </div>
       </div>
     );
   }
   return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
       {rank}
     </div>
   );
@@ -79,24 +86,30 @@ export function LeaderboardTable({ leaders }: { leaders: Leader[] }) {
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              {leader.badgeImageUrl && (
-                <BadgeIcon
-                  imageUrl={leader.badgeImageUrl}
-                  name={leader.badgeName ?? "Lencana"}
-                  size="sm"
-                />
-              )}
               <span className="truncate font-bold text-foreground">
                 {leader.nama}
               </span>
               {leader.isCurrentUser && (
-                <Badge variant="primary" className="text-[10px]">
+                <Badge variant="primary" className="text-xs">
                   Kamu
                 </Badge>
               )}
               <Badge variant="primary">Lv. {leader.level}</Badge>
             </div>
-            <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted">
+            <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+              {leader.badgeImageUrl && (
+                <span
+                  className="inline-flex max-w-[140px] items-center gap-1 rounded-full bg-secondary/10 px-1.5 py-0.5 font-semibold text-secondary"
+                  title={leader.badgeName ?? undefined}
+                >
+                  <BadgeIcon
+                    imageUrl={leader.badgeImageUrl}
+                    name={leader.badgeName ?? "Lencana"}
+                    size="sm"
+                  />
+                  <span className="truncate">{leader.badgeName ?? "Lencana"}</span>
+                </span>
+              )}
               <span className="flex items-center gap-1">
                 <Star className="h-3.5 w-3.5 text-tertiary" />
                 {leader.exp} EXP

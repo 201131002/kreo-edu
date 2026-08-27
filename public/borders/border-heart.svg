@@ -1,9 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="88" stroke="#f43f5e" stroke-width="5"/>
-  <path d="M100 14 C94 8 84 10 84 20 C84 28 100 36 100 36 C100 36 116 28 116 20 C116 10 106 8 100 14Z" fill="#fb7185"/>
-  <path d="M168 72 C162 66 152 68 152 78 C152 86 168 94 168 94 C168 94 184 86 184 78 C184 68 174 66 168 72Z" fill="#fda4af"/>
-  <path d="M168 128 C162 134 152 132 152 122 C152 114 168 106 168 106 C168 106 184 114 184 122 C184 132 174 134 168 128Z" fill="#fb7185"/>
-  <path d="M100 186 C94 192 84 190 84 180 C84 172 100 164 100 164 C100 164 116 172 116 180 C116 190 106 192 100 186Z" fill="#fda4af"/>
-  <path d="M32 128 C26 134 16 132 16 122 C16 114 32 106 32 106 C32 106 48 114 48 122 C48 132 38 134 32 128Z" fill="#fb7185"/>
-  <path d="M32 72 C26 66 16 68 16 78 C16 86 32 94 32 94 C32 94 48 86 48 78 C48 68 38 66 32 72Z" fill="#fda4af"/>
+  <defs>
+    <linearGradient id="htG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fda4af"/>
+      <stop offset="0.5" stop-color="#f43f5e"/>
+      <stop offset="1" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#htG)" stroke-width="9"/>
+  <circle cx="100" cy="100" r="81" stroke="#ffe4e6" stroke-width="2.5" stroke-dasharray="1 7" stroke-linecap="round"/>
+
+  <!-- hearts at four points -->
+  <path d="M100 8 C104 2 114 2 114 10 C114 17 106 22 100 26 C94 22 86 17 86 10 C86 2 96 2 100 8 Z"
+        fill="#fb7185" stroke="#e11d48" stroke-width="1.5"/>
+  <path d="M100 192 C104 198 114 198 114 190 C114 183 106 178 100 174 C94 178 86 183 86 190 C86 198 96 198 100 192 Z"
+        fill="#fb7185" stroke="#e11d48" stroke-width="1.5"/>
+  <path d="M12 100 C6 104 6 114 14 114 C21 114 26 106 30 100 C26 94 21 86 14 86 C6 86 6 96 12 100 Z"
+        fill="#fb7185" stroke="#e11d48" stroke-width="1.5"/>
+  <path d="M188 100 C194 104 194 114 186 114 C179 114 174 106 170 100 C174 94 179 86 186 86 C194 86 194 96 188 100 Z"
+        fill="#fb7185" stroke="#e11d48" stroke-width="1.5"/>
+
+  <!-- small hearts -->
+  <path d="M42 34 c1.8 -2.6 5.8 -2.6 5.8 .6 c0 3 -3.6 4.9 -5.8 6.4 c-2.2 -1.5 -5.8 -3.4 -5.8 -6.4 c0 -3.2 4 -3.2 5.8 -.6 Z"
+        fill="#fecdd3"/>
+  <path d="M158 166 c1.8 -2.6 5.8 -2.6 5.8 .6 c0 3 -3.6 4.9 -5.8 6.4 c-2.2 -1.5 -5.8 -3.4 -5.8 -6.4 c0 -3.2 4 -3.2 5.8 -.6 Z"
+        fill="#fecdd3"/>
 </svg>

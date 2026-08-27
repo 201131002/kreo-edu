@@ -1,10 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <g stroke="#f59e0b" stroke-width="4" stroke-linecap="round">
-    <line x1="100" y1="8" x2="100" y2="24"/><line x1="100" y1="176" x2="100" y2="192"/>
-    <line x1="8" y1="100" x2="24" y2="100"/><line x1="176" y1="100" x2="192" y2="100"/>
-    <line x1="35" y1="35" x2="47" y2="47"/><line x1="153" y1="153" x2="165" y2="165"/>
-    <line x1="153" y1="47" x2="165" y2="35"/><line x1="35" y1="165" x2="47" y2="153"/>
+  <defs>
+    <linearGradient id="sbG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fde047"/>
+      <stop offset="0.5" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#c2410c"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#sbG)" stroke-width="9"/>
+
+  <!-- sun rays radiating inward -->
+  <g stroke="#fbbf24" stroke-width="5" stroke-linecap="round">
+    <path d="M100 12 v14"/><path d="M100 188 v-14"/>
+    <path d="M12 100 h14"/><path d="M188 100 h-14"/>
+    <path d="M38 38 l10 10"/><path d="M162 162 l-10 -10"/>
+    <path d="M162 38 l-10 10"/><path d="M38 162 l10 -10"/>
+    <path d="M66 20 l4.8 13.2"/><path d="M134 180 l-4.8 -13.2"/>
+    <path d="M20 134 l13.2 -4.8"/><path d="M180 66 l-13.2 4.8"/>
+    <path d="M20 66 l13.2 4.8"/><path d="M180 134 l-13.2 -4.8"/>
+    <path d="M66 180 l4.8 -13.2"/><path d="M134 20 l-4.8 13.2"/>
   </g>
-  <circle cx="100" cy="100" r="78" stroke="#fbbf24" stroke-width="8"/>
-  <circle cx="100" cy="100" r="70" stroke="#fde68a" stroke-width="2"/>
+
+  <!-- inner dashed ring -->
+  <circle cx="100" cy="100" r="80" stroke="#fef08a" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="round"/>
 </svg>

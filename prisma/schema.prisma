@@ -34,6 +34,7 @@ model User {
   password       String
   imageUrl       String?
   role           UserRole  @default(SISWA)
+  tokenVersion   Int       @default(0)
   createdAt      DateTime  @default(now())
 
   studentProfile      StudentProfile?
@@ -43,6 +44,8 @@ model User {
   discussionMessages    DiscussionMessage[]
   questionBankItems     QuestionBankItem[]  @relation("QuestionBankCreator")
   auditLogs             AuditLog[]
+  materialProgress      MaterialProgress[]
+  quizProgress          QuizProgress[]
 
   @@index([role])
 }
@@ -115,6 +118,33 @@ model Material {
   createdAt DateTime @default(now())
 
   class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  media   Media[]
+  progress MaterialProgress[]
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+  PDF
+  EBOOK
+  EMBED
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  materialId String
+  type       MediaType
+  url        String
+  title      String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  material   Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@index([materialId])
+  @@index([order])
 }
 
 model Quiz {
@@ -125,9 +155,10 @@ model Quiz {
   rewardExp   Int      @default(50)
   createdAt   DateTime @default(now())
 
-  class        Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  class        Class          @relation(fields: [classId], references: [id], onDelete: Cascade)
   questions    Question[]
   quizAttempts QuizAttempt[]
+  quizProgress QuizProgress[]
 }
 
 model Question {
@@ -268,4 +299,38 @@ model SiteSettings {
   footerTagline      String   @default("Platform belajar gamifikasi untuk siswa SD — belajar jadi petualangan seru!")
   footerCopyright    String   @default("© 2026 KREO. Dibuat dengan ❤️ untuk generasi penerus.")
   updatedAt          DateTime @updatedAt
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model MaterialProgress {
+  id          String         @id @default(cuid())
+  materialId  String
+  studentId   String
+  status      ProgressStatus @default(NOT_STARTED)
+  updatedAt   DateTime       @updatedAt
+
+  material    Material       @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  student     User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([materialId, studentId])
+  @@index([studentId])
+}
+
+model QuizProgress {
+  id          String         @id @default(cuid())
+  quizId      String
+  studentId   String
+  status      ProgressStatus @default(NOT_STARTED)
+  updatedAt   DateTime       @updatedAt
+
+  quiz        Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student     User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([quizId, studentId])
+  @@index([studentId])
 }

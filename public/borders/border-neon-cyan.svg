@@ -1,9 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <defs><filter id="g" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-  <circle cx="100" cy="100" r="92" stroke="#22d3ee" stroke-width="6" filter="url(#g)"/>
-  <circle cx="100" cy="100" r="86" stroke="#06b6d4" stroke-width="2"/>
-  <rect x="94" y="4" width="12" height="12" rx="2" fill="#67e8f9" transform="rotate(45 100 10)"/>
-  <rect x="94" y="184" width="12" height="12" rx="2" fill="#67e8f9" transform="rotate(45 100 190)"/>
-  <rect x="4" y="94" width="12" height="12" rx="2" fill="#67e8f9" transform="rotate(45 10 100)"/>
-  <rect x="184" y="94" width="12" height="12" rx="2" fill="#67e8f9" transform="rotate(45 190 100)"/>
+  <defs>
+    <filter id="neonCyGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <circle cx="100" cy="100" r="92" stroke="#22d3ee" stroke-width="8" filter="url(#neonCyGlow)"/>
+  <circle cx="100" cy="100" r="82" stroke="#a5f3fc" stroke-width="2.5" stroke-dasharray="4 8"/>
+  <rect x="92" y="2" width="16" height="16" rx="3" fill="#67e8f9" transform="rotate(45 100 10)" filter="url(#neonCyGlow)"/>
+  <rect x="92" y="182" width="16" height="16" rx="3" fill="#67e8f9" transform="rotate(45 100 190)" filter="url(#neonCyGlow)"/>
+  <rect x="2" y="92" width="16" height="16" rx="3" fill="#67e8f9" transform="rotate(45 10 100)" filter="url(#neonCyGlow)"/>
+  <rect x="182" y="92" width="16" height="16" rx="3" fill="#67e8f9" transform="rotate(45 190 100)" filter="url(#neonCyGlow)"/>
 </svg>

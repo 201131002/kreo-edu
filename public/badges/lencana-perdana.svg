@@ -1,7 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <circle cx="60" cy="60" r="54" fill="#ecfdf5" stroke="#10b981" stroke-width="6"/>
-  <path d="M60 28 L68 52 L60 46 L52 52 Z" fill="#059669"/>
-  <rect x="44" y="56" width="32" height="24" rx="6" fill="#34d399"/>
-  <path d="M52 64 L58 70 L72 56" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="60" y="98" text-anchor="middle" font-size="11" font-weight="bold" fill="#047857" font-family="sans-serif">1st</text>
+  <defs>
+    <linearGradient id="medalGreen" x1="30" y1="24" x2="90" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6ee7b7"/>
+      <stop offset="0.55" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="ribbonTealL" x1="38" y1="66" x2="52" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="ribbonTealR" x1="68" y1="112" x2="82" y2="66" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <radialGradient id="shineGreen" cx="0.35" cy="0.3" r="0.75">
+      <stop stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ribbons -->
+  <path d="M44 62 L36 108 L54 98 L60 106 L60 74 Z" fill="url(#ribbonTealL)"/>
+  <path d="M76 62 L84 108 L66 98 L60 106 L60 74 Z" fill="url(#ribbonTealR)"/>
+
+  <!-- medal body -->
+  <circle cx="60" cy="48" r="34" fill="url(#medalGreen)"/>
+  <circle cx="60" cy="48" r="27" fill="none" stroke="#ecfdf5" stroke-width="2.5" opacity="0.8"/>
+
+  <!-- checkmark emblem -->
+  <circle cx="60" cy="48" r="16" fill="#ecfdf5" opacity="0.95"/>
+  <path d="M51.5 48.5 L57.5 54.5 L69 42.5" stroke="#059669" stroke-width="5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- gloss -->
+  <circle cx="60" cy="48" r="34" fill="url(#shineGreen)"/>
+
+  <!-- sparkles -->
+  <path d="M92 22 l1.8 4.6 4.6 1.8 -4.6 1.8 -1.8 4.6 -1.8 -4.6 -4.6 -1.8 4.6 -1.8 Z" fill="#a7f3d0" opacity="0.95"/>
+  <path d="M26 78 l1.4 3.6 3.6 1.4 -3.6 1.4 -1.4 3.6 -1.4 -3.6 -3.6 -1.4 3.6 -1.4 Z" fill="#d1fae5" opacity="0.9"/>
 </svg>

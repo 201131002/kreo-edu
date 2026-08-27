@@ -1,10 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="87" stroke="#15803d" stroke-width="5"/>
-  <path d="M100 10 C90 18 95 28 100 34 C105 28 110 18 100 10Z" fill="#22c55e"/>
-  <path d="M175 65 C165 72 168 82 175 88 C182 80 180 70 175 65Z" fill="#4ade80"/>
-  <path d="M175 135 C182 142 180 152 175 158 C168 150 165 140 175 135Z" fill="#22c55e"/>
-  <path d="M100 190 C110 182 105 172 100 166 C95 172 90 182 100 190Z" fill="#4ade80"/>
-  <path d="M25 135 C18 142 20 152 25 158 C32 150 35 140 25 135Z" fill="#22c55e"/>
-  <path d="M25 65 C32 58 35 48 25 42 C18 50 20 60 25 65Z" fill="#4ade80"/>
-  <circle cx="62" cy="62" r="5" fill="#f97316"/><circle cx="138" cy="138" r="5" fill="#f97316"/>
+  <defs>
+    <linearGradient id="jgG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#86efac"/>
+      <stop offset="0.5" stop-color="#16a34a"/>
+      <stop offset="1" stop-color="#14532d"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#jgG)" stroke-width="10"/>
+  <circle cx="100" cy="100" r="80" stroke="#bbf7d0" stroke-width="2.5" stroke-dasharray="2 8" stroke-linecap="round"/>
+
+  <!-- leaves at cardinal points -->
+  <path d="M100 4 C112 12 112 26 100 36 C88 26 88 12 100 4 Z M100 10 V32" fill="#22c55e" stroke="#166534" stroke-width="1.2"/>
+  <path d="M100 196 C112 188 112 174 100 164 C88 174 88 188 100 196 Z M100 190 V168" fill="#22c55e" stroke="#166534" stroke-width="1.2"/>
+  <path d="M4 100 C12 88 26 88 36 100 C26 112 12 112 4 100 Z M10 100 H32" fill="#16a34a" stroke="#14532d" stroke-width="1.2"/>
+  <path d="M196 100 C188 112 174 112 164 100 C174 88 188 88 196 100 Z M190 100 H168" fill="#16a34a" stroke="#14532d" stroke-width="1.2"/>
+
+  <!-- vines on diagonals -->
+  <path d="M38 24 q14 6 12 20 q-2 10 8 16" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="59" cy="62" r="3.5" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>
+  <path d="M162 176 q-14 -6 -12 -20 q2 -10 -8 -16" stroke="#15803d" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="141" cy="138" r="3.5" fill="#fde047" stroke="#ca8a04" stroke-width="1"/>
 </svg>

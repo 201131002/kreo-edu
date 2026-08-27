@@ -452,6 +452,26 @@
       "noStudentsClass": "No students in this class yet.",
       "inClass": " in {className}"
     },
+    "studentDetail": {
+      "studentsTitle": "Student Management",
+      "backToStudents": "Back to student list",
+      "avgScore": "Average Score",
+      "quizzesPassed": "Quizzes Passed (≥{threshold})",
+      "materialsCompleted": "Materials Completed",
+      "levelLabel": "Student Level",
+      "quizHistoryTitle": "Quiz History",
+      "materialProgressTitle": "Material Progress",
+      "colQuiz": "Quiz",
+      "colClass": "Class",
+      "colDate": "Date",
+      "colScore": "Score",
+      "noMaterialProgress": "No material progress yet.",
+      "status": {
+        "NOT_STARTED": "Not Started",
+        "IN_PROGRESS": "In Progress",
+        "COMPLETED": "Completed"
+      }
+    },
     "analytics": {
       "title": "Class Analytics",
       "description": "Statistics for your classes and students — not platform-wide data",
@@ -485,12 +505,18 @@
       "exportPdf": "Export PDF",
       "filterTitle": "Analytics Filters",
       "filterDesc": "Filter by class, quiz, and attempt date range",
+      "classLabel": "Class",
+      "quizLabel": "Quiz",
       "allClasses": "All classes",
       "allQuizzes": "All quizzes",
       "fromDate": "From date",
       "toDate": "To date",
       "applyFilter": "Apply Filter",
-      "resetFilter": "Reset"
+      "resetFilter": "Reset",
+      "weeklyTrendTitle": "Attempt Trend — Last 8 Weeks",
+      "materialStatsTitle": "Material Stats — Completed Reading",
+      "noMaterials": "No materials in your classes yet.",
+      "showingOf": "Showing {shown} of {total}"
     },
     "jadwal": {
       "title": "Student Study Schedule",
@@ -618,7 +644,29 @@
       "totalQuizzes": "Total Quizzes",
       "completedQuizzes": "Quizzes Completed",
       "avgScoreTitle": "Global Average Score",
-      "avgScoreDesc": "From {count} quiz attempts across the platform"
+      "avgScoreDesc": "From {count} quiz attempts across the platform",
+      "activeUsers7d": "Active (7 Days)",
+      "activeUsers30d": "Active (30 Days)",
+      "roleGuru": "Teachers",
+      "roleSiswa": "Students",
+      "roleAdmin": "Admins",
+      "filterTitle": "Period Filter",
+      "fromDate": "From date",
+      "toDate": "To date",
+      "applyFilter": "Apply",
+      "resetFilter": "Reset",
+      "growthTitle": "Growth — Last 8 Weeks",
+      "colWeek": "Week Starting",
+      "colNewUsers": "New Users",
+      "colNewAttempts": "Quiz Attempts",
+      "classRankingTitle": "Class Ranking (Avg Score)",
+      "classMeta": "{students} students · {attempts} attempts",
+      "hardestQuestionsTitle": "Hardest Questions (Platform)",
+      "noQuestionData": "No per-question answer data yet.",
+      "roleDistTitle": "User Role Distribution",
+      "noData": "No data yet.",
+      "exportExcel": "Export Excel",
+      "exportPdf": "Export PDF"
     },
     "flash": {
       "userCreated": "New user added successfully.",

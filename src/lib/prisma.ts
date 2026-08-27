@@ -4,7 +4,7 @@ import type pg from "pg";
 import { createPgPool } from "@/lib/db-pool";
 
 /** Naikkan angka ini setiap ada perubahan schema Prisma agar cache dev di-refresh. */
-const PRISMA_CLIENT_VERSION = 10;
+const PRISMA_CLIENT_VERSION = 11;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

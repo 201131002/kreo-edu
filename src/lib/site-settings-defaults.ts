@@ -67,7 +67,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsData = {
   ctaButtonText: "Daftar Gratis Sekarang",
   footerTagline:
     "Platform belajar gamifikasi untuk siswa SD — belajar jadi petualangan seru!",
-  footerCopyright: "© 2026 KREO. Dibuat dengan ❤️ untuk generasi penerus.",
+  footerCopyright: "© 2026 KREO. Untuk generasi penerus Indonesia.",
 };
 
 export function defaultSiteSettingsDbPayload() {

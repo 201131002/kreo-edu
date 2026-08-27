@@ -1,12 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <circle cx="100" cy="100" r="88" stroke="#6366f1" stroke-width="4"/>
-  <polygon points="100,6 103,16 100,12 97,16" fill="#fbbf24"/>
-  <polygon points="170,45 173,55 170,51 167,55" fill="#fbbf24"/>
-  <polygon points="194,100 184,103 188,100 184,97" fill="#fbbf24"/>
-  <polygon points="170,155 173,145 170,149 167,145" fill="#fbbf24"/>
-  <polygon points="100,194 103,184 100,188 97,184" fill="#fbbf24"/>
-  <polygon points="30,155 33,145 30,149 27,145" fill="#fbbf24"/>
-  <polygon points="6,100 16,103 12,100 16,97" fill="#fbbf24"/>
-  <polygon points="30,45 33,55 30,51 27,55" fill="#fbbf24"/>
-  <circle cx="100" cy="100" r="80" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="4 8"/>
+  <defs>
+    <linearGradient id="stG" x1="30" y1="20" x2="170" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c7d2fe"/>
+      <stop offset="0.5" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#3730a3"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="94" stroke="url(#stG)" stroke-width="9"/>
+  <circle cx="100" cy="100" r="81" stroke="#e0e7ff" stroke-width="2.5" stroke-dasharray="1 8" stroke-linecap="round"/>
+
+  <!-- five-point stars -->
+  <path d="M100 4 L104.5 15.5 L116.5 16.5 L107.5 24.5 L110.5 36.5 L100 30 L89.5 36.5 L92.5 24.5 L83.5 16.5 L95.5 15.5 Z"
+        fill="#fde047" stroke="#ca8a04" stroke-width="1.2"/>
+  <path d="M100 172 L103.5 181 L113 181.8 L105.8 188.1 L108.1 197.5 L100 192.5 L91.9 197.5 L94.2 188.1 L87 181.8 L96.5 181 Z"
+        fill="#fef08a"/>
+  <path d="M14 92 l3.4 8.6 8.6 .8 -6.6 5.9 2.2 8.9 -7.6 -4.6 -7.6 4.6 2.2 -8.9 -6.6 -5.9 8.6 -.8 Z"
+        fill="#fef08a"/>
+  <path d="M186 92 l-3.4 8.6 -8.6 .8 6.6 5.9 -2.2 8.9 7.6 -4.6 7.6 4.6 -2.2 -8.9 6.6 -5.9 -8.6 -.8 Z"
+        fill="#fde047"/>
+
+  <!-- twinkle dots -->
+  <circle cx="40" cy="34" r="2" fill="#fef9c3"/><circle cx="160" cy="166" r="2" fill="#fef9c3"/>
+  <circle cx="164" cy="38" r="1.5" fill="#c7d2fe"/><circle cx="36" cy="162" r="1.5" fill="#c7d2fe"/>
 </svg>

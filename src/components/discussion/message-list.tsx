@@ -84,7 +84,7 @@ export function MessageList({ messages }: { messages: Message[] }) {
                   <span className="text-sm font-bold text-foreground">
                     {msg.sender.nama}
                   </span>
-                  <Badge variant={roleBadge[msg.sender.role]} className="text-[10px]">
+                  <Badge variant={roleBadge[msg.sender.role]} className="text-xs">
                     {msg.sender.role}
                   </Badge>
                 </div>
@@ -99,7 +99,7 @@ export function MessageList({ messages }: { messages: Message[] }) {
               </p>
               <p
                 className={cn(
-                  "mt-1.5 text-right text-[10px]",
+                  "mt-1.5 text-right text-xs",
                   msg.isOwn ? "text-white/70" : "text-muted"
                 )}
               >

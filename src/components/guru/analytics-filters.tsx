@@ -10,6 +10,19 @@ type QuizOption = {
   class: { title: string };
 };
 
+export type AnalyticsFilterLabels = {
+  title: string;
+  description: string;
+  classLabel: string;
+  quizLabel: string;
+  allClasses: string;
+  allQuizzes: string;
+  fromDate: string;
+  toDate: string;
+  apply: string;
+  reset: string;
+};
+
 export function AnalyticsFilters({
   classes,
   quizzes,
@@ -17,6 +30,7 @@ export function AnalyticsFilters({
   currentQuizId,
   currentFrom,
   currentTo,
+  labels,
 }: {
   classes: ClassOption[];
   quizzes: QuizOption[];
@@ -24,24 +38,23 @@ export function AnalyticsFilters({
   currentQuizId: string;
   currentFrom: string;
   currentTo: string;
+  labels: AnalyticsFilterLabels;
 }) {
   return (
     <Card className="mb-8">
-      <CardTitle>Filter Analitik</CardTitle>
-      <CardDescription>
-        Saring data berdasarkan kelas, kuis, dan rentang tanggal percobaan
-      </CardDescription>
+      <CardTitle>{labels.title}</CardTitle>
+      <CardDescription>{labels.description}</CardDescription>
 
       <form method="get" className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Label htmlFor="classId">Kelas</Label>
+          <Label htmlFor="classId">{labels.classLabel}</Label>
           <select
             id="classId"
             name="classId"
             defaultValue={currentClassId}
             className="mt-1 w-full rounded-2xl border-2 border-primary/10 bg-white px-4 py-2.5 text-sm"
           >
-            <option value="">Semua kelas</option>
+            <option value="">{labels.allClasses}</option>
             {classes.map((cls) => (
               <option key={cls.id} value={cls.id}>
                 {cls.title}
@@ -51,14 +64,14 @@ export function AnalyticsFilters({
         </div>
 
         <div>
-          <Label htmlFor="quizId">Kuis</Label>
+          <Label htmlFor="quizId">{labels.quizLabel}</Label>
           <select
             id="quizId"
             name="quizId"
             defaultValue={currentQuizId}
             className="mt-1 w-full rounded-2xl border-2 border-primary/10 bg-white px-4 py-2.5 text-sm"
           >
-            <option value="">Semua kuis</option>
+            <option value="">{labels.allQuizzes}</option>
             {quizzes.map((quiz) => (
               <option key={quiz.id} value={quiz.id}>
                 {quiz.class.title} — {quiz.title}
@@ -68,7 +81,7 @@ export function AnalyticsFilters({
         </div>
 
         <div>
-          <Label htmlFor="from">Dari tanggal</Label>
+          <Label htmlFor="from">{labels.fromDate}</Label>
           <Input
             id="from"
             name="from"
@@ -79,7 +92,7 @@ export function AnalyticsFilters({
         </div>
 
         <div>
-          <Label htmlFor="to">Sampai tanggal</Label>
+          <Label htmlFor="to">{labels.toDate}</Label>
           <Input
             id="to"
             name="to"
@@ -91,11 +104,11 @@ export function AnalyticsFilters({
 
         <div className="flex flex-wrap gap-2 sm:col-span-2 lg:col-span-4">
           <Button type="submit" size="sm">
-            Terapkan Filter
+            {labels.apply}
           </Button>
           <Link href="/guru/analitik">
             <Button type="button" variant="outline" size="sm">
-              Reset
+              {labels.reset}
             </Button>
           </Link>
         </div>

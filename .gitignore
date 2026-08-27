@@ -80,6 +80,11 @@ yarn-error.log*
 # Thesis / skripsi / AI documentation — excluded from public repo
 /data/
 /revisi/
+/revisita/
+/diagram/
+/semhas/
+Manual-Book-KREO.pdf
+qids.mjs
 *.zip
 qids.ts
 
